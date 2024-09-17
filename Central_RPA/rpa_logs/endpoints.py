@@ -21,7 +21,7 @@ def registro(request:WSGIRequest):
 
 @permission_required('rpa_logs.log.user', raise_exception=True) #type: ignore   
 def registro_get(request: WSGIRequest):
-    serializer = models.resistroSerializer(models.registro.objects.all(), many=True)
+    serializer = models.registroSerializer(models.registro.objects.all(), many=True)
     return JsonResponse(serializer.data, safe=False)
 
 @permission_required('rpa_logs.log.admin', raise_exception=True) #type: ignore    

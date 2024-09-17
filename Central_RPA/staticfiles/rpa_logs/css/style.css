@@ -1,0 +1,13 @@
+.bg-primary-costume {
+    background-color: rgb(23, 201, 23);
+}
+
+.bg-secundary-costume {
+    background-color: brown;
+}
+
+.bt_sair {
+    display: flex;
+    flex-direction: row-reverse;
+}
+

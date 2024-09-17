@@ -21,7 +21,7 @@ class registro(models.Model):
         return self.nome_rpa
     
     
-class resistroSerializer(serializers.ModelSerializer):
+class registroSerializer(serializers.ModelSerializer):
     class Meta:
         model = registro
         fields = '__all__'
