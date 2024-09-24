@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from . import views
 
 def sair(request):
     logout(request)
@@ -27,8 +28,9 @@ def sair(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/rpa_logs/', include('rpa_logs.urls')),
-    path('rpa_logs/', include('rpa_logs.urls')),
+    path('rpa_logs/', include('rpa_logs.urls'), name='rpa_logs'),
     path('tasks/', include('tasks.urls')),
     path('login/', LoginView.as_view(), name="login"),
     path('logout/', sair, name="logout"),
+    path('', views.index, name='home_index')
 ]

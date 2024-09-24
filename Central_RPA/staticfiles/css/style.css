@@ -6,8 +6,7 @@
     background-color: brown;
 }
 
-.bt_sair {
-    display: flex;
-    flex-direction: row-reverse;
+.bt_logout {
+    color: red;
 }
 

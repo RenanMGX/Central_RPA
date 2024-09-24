@@ -20,7 +20,9 @@ class Tarefas:
         if result:
             result = re.search(r'(?<=Status: )[\d\D]+', result.group())
             if result:
-                return result.group()
+                result = result.group().replace("\n",'')
+                return re.sub(r'[ ]{2,}' ,'', result)
+                
         return "None"
     
     @staticmethod
