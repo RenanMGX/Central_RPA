@@ -1,12 +1,7 @@
-.bg-primary-costume {
-    background-color: rgb(23, 201, 23);
-}
-
-.bg-secundary-costume {
-    background-color: brown;
-}
-
-.bt_logout {
+.messages{
     color: red;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 10%;
 }
-

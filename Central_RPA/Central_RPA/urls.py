@@ -30,7 +30,8 @@ urlpatterns = [
     path('api/rpa_logs/', include('rpa_logs.urls')),
     path('rpa_logs/', include('rpa_logs.urls'), name='rpa_logs'),
     path('tasks/', include('tasks.urls')),
-    path('login/', LoginView.as_view(), name="login"),
+    path('login/', views.login, name="login"),
     path('logout/', sair, name="logout"),
-    path('', views.index, name='home_index')
+    path('', views.index, name='home_index'),
+    #path('teste', views.login, name='teste')
 ]
