@@ -9,7 +9,10 @@ urlpatterns = [
     #path('', views.filtro_lista, name='filtro'),
     #path('listar', views.lista, name="listar")
     path('', views.index, name='tasks_index'),
-    path('executar/<str:nome_tarefa>', views.execute, name='executar'),
-    path('status/<str:nome_tarefa>', views.status, name='status'),
+    path('start_task/<str:permission>', views.start_task, name='start_task'),
+    path('stop_task/<str:permission>', views.stop_task, name='stop_task'),
+    path('status/<str:permission>', views.status, name='status'),
+    path('criar_tarefa', views.criar_tarefa, name='criar_tarefa'),
+    path('deletar_tarefa/<int:pk>', views.deletar_tarefa, name='deletar_tarefa'),
 ]
 

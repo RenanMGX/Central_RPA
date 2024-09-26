@@ -5,5 +5,126 @@
 {% endblock %}
 
 {% block content %}
-    Pagina de task
+<!-- <meta http-equiv="refresh" content=".1"> -->
+
+
+<div class="container">
+  <h2>Tarefas de Automações</h2>
+  <p>Você pode iniciar as tarefas com um simples clique.</p>
+
+  {% if 'admin.add_logentry' in request.user.get_all_permissions %}
+  
+  <form action="{% url "criar_tarefa" %}" method="POST">
+    {% csrf_token %}
+    <label>Nome Tarefa:</label><input type="text" id="tarefa" name="tarefa"><br>
+    
+    <label> Permissioes:</label>
+    <select id="permission" name="permission">
+        {% for perm in all_permissions %}
+        <option value="{{perm.content_type.app_label}}.{{perm.codename}}">{{perm}}</option>
+        {% endfor %}
+    </select><br>
+    
+    <label> Pode ser encerrado:</label>
+    <select id="can_stop" name="can_stop">
+        <option value="True">Sim</option>
+        <option value="False">Não</option>
+    </select><br>
+    
+    <label>Infor:</label><input type="text" id="infor" name="infor"><br>
+    
+    <input type='submit' value="Criar">
+  </form>
+
+  
+  {% endif %}
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Automação</th>
+        <th>Status</th>
+        <th>Informações</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    {% for tarefa in tarefas %}
+
+    <tr id="tr_{{tarefa.key}}">
+        <td>{{tarefa.pk}}</td>
+        <td>{{tarefa.nome}}</td>
+        <td id="status_{{tarefa.key}}">{status}</td>
+        <td>{{ tarefa.infor }}</td>
+
+        <!-- incio bloco unico -->
+        
+        <td id="bt_exec_{{tarefa.key}}"><a href="{% url "start_task" permission=tarefa.permission %}"><button>Iniciar</button></a></td>
+        {% if tarefa.can_stop %}
+        <td id="bt_stop_{{tarefa.key}}"><a href="{% url "stop_task" permission=tarefa.permission %}"><button>Encerrar</button></td>
+        {% else %}
+        <td id="bt_stop_{{tarefa.key}}">N/A</td>
+        {% endif %}
+        <td id="bt_hidden_{{tarefa.key}}">N/A</td>
+        <!-- fim bloco unico -->
+        
+        {% if 'admin.add_logentry' in request.user.get_all_permissions %}
+        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}"><button>Deletar</button></td>
+        {% endif %}
+      </tr>
+
+    {% endfor %}
+
+    </tbody>
+  </table>
+</div>
+<script>
+
+    async function verificar(){
+        {% for tarefa in tarefas %}
+            var response = await fetch("{% url 'status' permission=tarefa.permission %}");
+            
+            if (!response.ok) {
+                resultado = `${response.status} - ${response.statusText}`
+            }else {
+                try {
+                    resultado = await response.json()
+                    resultado = resultado.status
+                } catch (error){
+                    resultado = `Erro: ${error}`
+                }
+            }
+            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado
+
+            var task_status = document.getElementById("status_{{tarefa.key}}").innerHTML
+
+            document.getElementById("bt_exec_{{tarefa.key}}").style = "display: None"
+            document.getElementById("bt_stop_{{tarefa.key}}").style = "display: None"
+            document.getElementById("bt_hidden_{{tarefa.key}}").style = "display: None"
+
+            if (task_status == "Pronto"){
+                document.getElementById("tr_{{tarefa.key}}").className = "warning"
+                document.getElementById("bt_exec_{{tarefa.key}}").style = "display: ruby-text"
+
+            }else if (task_status == "Em execução"){
+                document.getElementById("tr_{{tarefa.key}}").className = "success"
+                document.getElementById("bt_stop_{{tarefa.key}}").style = "display: ruby-text"
+            }else {
+                document.getElementById("tr_{{tarefa.key}}").className = "danger"
+                document.getElementById("bt_hidden_{{tarefa.key}}").style = "display: ruby-text"
+            }
+
+        {% endfor %}
+    };
+
+
+verificar()
+{% if atualizar_status_auto %}
+setInterval(verificar, 500)
+{% endif %}
+</script>
+
 {% endblock %}
