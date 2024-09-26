@@ -29,7 +29,7 @@ def index(request:WSGIRequest, ):
     content:dict = {
         'tarefas': tarefas,
         'user': request.user,
-        'atualizar_status_auto': False,
+        'atualizar_status_auto': True,
         'all_permissions': Permission.objects.all()
     }
     
