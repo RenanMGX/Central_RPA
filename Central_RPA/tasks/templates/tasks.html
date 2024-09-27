@@ -57,18 +57,18 @@
     <tr id="tr_{{tarefa.key}}">
         <td>{{tarefa.pk}}</td>
         <td>{{tarefa.nome}}</td>
-        <td id="status_{{tarefa.key}}">{status}</td>
+        <td id="status_{{tarefa.key}}">{{ tarefa.status }}</td>
         <td>{{ tarefa.infor }}</td>
 
         <!-- incio bloco unico -->
         
-        <td id="bt_exec_{{tarefa.key}}"><a href="{% url "start_task" permission=tarefa.permission %}"><button>Iniciar</button></a></td>
+        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}"><button>Iniciar</button></a></td>
         {% if tarefa.can_stop %}
-        <td id="bt_stop_{{tarefa.key}}"><a href="{% url "stop_task" permission=tarefa.permission %}"><button>Encerrar</button></td>
+        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" permission=tarefa.permission %}"><button>Encerrar</button></td>
         {% else %}
-        <td id="bt_stop_{{tarefa.key}}">N/A</td>
+        <td id="bt_stop_{{tarefa.key}}"style="display: None">N/A</td>
         {% endif %}
-        <td id="bt_hidden_{{tarefa.key}}">N/A</td>
+        <td id="bt_hidden_{{tarefa.key}}"style="display: None">N/A</td>
         <!-- fim bloco unico -->
         
         {% if 'admin.add_logentry' in request.user.get_all_permissions %}
@@ -84,20 +84,25 @@
 <script>
 
     async function verificar(){
-        {% for tarefa in tarefas %}
-            var response = await fetch("{% url 'status' permission=tarefa.permission %}");
+        
+            var response = await fetch("{% url 'status' %}");
             
             if (!response.ok) {
                 resultado = `${response.status} - ${response.statusText}`
             }else {
                 try {
                     resultado = await response.json()
-                    resultado = resultado.status
+                    resultado = resultado
                 } catch (error){
                     resultado = `Erro: ${error}`
                 }
             }
-            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado
+
+            console.log(response)
+            console.log(resultado)
+
+            {% for tarefa in tarefas %}
+            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado['{{tarefa.permission}}']
 
             var task_status = document.getElementById("status_{{tarefa.key}}").innerHTML
 
@@ -107,14 +112,14 @@
 
             if (task_status == "Pronto"){
                 document.getElementById("tr_{{tarefa.key}}").className = "warning"
-                document.getElementById("bt_exec_{{tarefa.key}}").style = "display: ruby-text"
+                document.getElementById("bt_exec_{{tarefa.key}}").style = "display: flex; justify-content:center"
 
             }else if (task_status == "Em execução"){
                 document.getElementById("tr_{{tarefa.key}}").className = "success"
-                document.getElementById("bt_stop_{{tarefa.key}}").style = "display: ruby-text"
+                document.getElementById("bt_stop_{{tarefa.key}}").style = "display: flex; justify-content:center"
             }else {
                 document.getElementById("tr_{{tarefa.key}}").className = "danger"
-                document.getElementById("bt_hidden_{{tarefa.key}}").style = "display: ruby-text"
+                document.getElementById("bt_hidden_{{tarefa.key}}").style = "display: flex; justify-content:center"
             }
 
         {% endfor %}

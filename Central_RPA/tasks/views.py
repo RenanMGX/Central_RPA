@@ -37,13 +37,14 @@ def index(request:WSGIRequest, ):
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
-def status(request: WSGIRequest, permission):
+def status(request: WSGIRequest):
+    tasks:dict = {}
     for tarefa_perm in listar_tarefas():
-        if tarefa_perm.permission == permission:
-            if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
-                return JsonResponse({'status': tarefa_perm.status()})
+        if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
+            tasks[tarefa_perm.permission] = tarefa_perm.status()
+                #return JsonResponse({'status': tarefa_perm.status()})
     
-    return JsonResponse({'status': "Error: Tarefa Invalida!"})
+    return JsonResponse(tasks)
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   

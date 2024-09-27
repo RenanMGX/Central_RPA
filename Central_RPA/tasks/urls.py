@@ -11,7 +11,7 @@ urlpatterns = [
     path('', views.index, name='tasks_index'),
     path('start_task/<str:permission>', views.start_task, name='start_task'),
     path('stop_task/<str:permission>', views.stop_task, name='stop_task'),
-    path('status/<str:permission>', views.status, name='status'),
+    path('status', views.status, name='status'),
     path('criar_tarefa', views.criar_tarefa, name='criar_tarefa'),
     path('deletar_tarefa/<int:pk>', views.deletar_tarefa, name='deletar_tarefa'),
 ]
