@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.core.handlers.wsgi import WSGIRequest #for Typing
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login
-
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
 from django.contrib import messages
 
 @login_required()
@@ -25,3 +26,17 @@ def login(request: WSGIRequest):
         return render(request, 'registration/login.html')
         
     return redirect('home_index')
+
+
+
+class AlterarSenha(PasswordChangeView):
+    template_name = 'alterar_senha.html'
+    success_url = reverse_lazy('home_index')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Sua senha foi alterada com sucesso!')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, f'Ocorreu um erro ao tentar alterar a senha. Verifique os campos abaixo.')
+        return super().form_invalid(form)

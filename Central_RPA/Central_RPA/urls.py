@@ -20,6 +20,9 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from . import views
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+
 
 def sair(request):
     logout(request)
@@ -33,5 +36,6 @@ urlpatterns = [
     path('login/', views.login, name="login"),
     path('logout/', sair, name="logout"),
     path('', views.index, name='home_index'),
-    #path('teste', views.login, name='teste')
+    #path('alterar_senha', PasswordChangeView.as_view(template_name='alterar_senha.html', success_url=reverse_lazy('home_index')), name='alterar_senha')
+    path('alterar_senha', views.AlterarSenha.as_view(), name='alterar_senha')
 ]
