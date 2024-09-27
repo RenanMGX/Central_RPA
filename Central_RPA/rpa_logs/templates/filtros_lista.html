@@ -53,7 +53,19 @@ Filtro da Lista
         <select name="status" id="status" class="form-control">
           <option value="todos">Todos</option>
           {% for item in status %}
-          <option value="{{ item }}">{{ item }}</option>
+          <option value="{{ item }}">
+          {% if item == 0 %} 
+          Concluido
+          {% elif item == 1 %}
+          Error
+          {% elif item == 2 %}
+          Report
+          {% elif item == 99 %}
+          Teste
+          {% else %}
+          {{ item }}
+          {% endif %} 
+          </option>
           {% endfor %}
         </select>
       </div>

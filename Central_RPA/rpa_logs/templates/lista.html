@@ -32,7 +32,16 @@ Lista de Registro
           <td>{{item.status}}</td>
           <td>{{item.horario}}</td>
           <td>{{item.descricao}}</td>
-          <td>{{item.exception}}</td>
+          <td>
+            {% if item.exception %}
+            <button type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo_{{item.id}}">Mostrar Error</button>
+            <div id="demo_{{item.id}}" class="collapse">
+            {{ item.exception}}
+          </div>
+          {% endif %}
+          
+
+          </td>
         </tr>
         {% endfor %}
       </tbody>

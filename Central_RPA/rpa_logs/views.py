@@ -22,6 +22,10 @@ def lista(request:WSGIRequest):
             if value:
                 dados = dados.filter(horario__date=datetime.strptime(value, '%Y-%m-%d'))
     
+    for dado in dados:
+        dado.exception = dado.exception.replace('<br>', '') #type: ignore 
+        dado.status = str(dado.status).replace('0', 'Concluido').replace('1', 'Error').replace('2', 'report').replace('99', "TESTE")#type: ignore 
+    
     content = {
         "lista" : dados
     }
@@ -36,7 +40,7 @@ def filtro_lista(request: WSGIRequest):
     nome_agente = list(set([x.nome_agente for x in dados]))
     status = list(set([x.status for x in dados]))
     now = datetime.now().strftime("%Y-%m-%d")
-    
+        
     content = {
         "nome_rpa" : nome_rpa,
         "nome_pc" : nome_pc,
