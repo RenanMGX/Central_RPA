@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import permission_required, login_required
 from datetime import datetime
 
 
+
 @login_required()
 @permission_required('rpa_logs.log.user', raise_exception=True) #type: ignore   
 def lista(request:WSGIRequest):

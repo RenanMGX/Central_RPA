@@ -10,9 +10,12 @@ COPY . /app
 # Instale as dependências do projeto
 RUN pip install -r requirements.txt
 
-# Exponha a porta 80
+# Exponha a porta 5000
 EXPOSE 5000
 
+RUN chown -R www-data:www-data /app
+
 # Defina o comando de inicialização do contêiner
-CMD ["python", "manage.py", "runserver", "127.0.0.1:5000"]
-#CMD ["python"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:5000"]
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "Central_RPA.wsgi:application"]
+
