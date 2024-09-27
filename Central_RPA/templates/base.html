@@ -36,7 +36,9 @@
     <div class="content">
         {% block content %}
         <div class="container">
-            <h2>Seja bem vindo {{request.user}}</h2>
+            <h2>Olá {{request.user.first_name}} {{request.user.last_name}}</h2>
+            
+
             <button class="btn btn-warning" onclick="window.location.href='{% url "alterar_senha" %}';">Alterar Senha</button>
         </div>
         {% endblock %}
