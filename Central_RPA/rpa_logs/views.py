@@ -23,7 +23,7 @@ def lista(request:WSGIRequest):
                 dados = dados.filter(horario__date=datetime.strptime(value, '%Y-%m-%d'))
     
     for dado in dados:
-        dado.exception = dado.exception.replace('<br>', '') #type: ignore 
+        #dado.exception = dado.exception.replace('<br>', '\n') #type: ignore 
         dado.status = str(dado.status).replace('0', 'Concluido').replace('1', 'Error').replace('2', 'report').replace('99', "TESTE")#type: ignore 
     
     content = {

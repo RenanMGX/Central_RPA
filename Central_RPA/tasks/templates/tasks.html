@@ -13,28 +13,57 @@
   <p>Você pode iniciar as tarefas com um simples clique.</p>
 
   {% if 'admin.add_logentry' in request.user.get_all_permissions %}
-  
-  <form action="{% url "criar_tarefa" %}" method="POST">
-    {% csrf_token %}
-    <label>Nome Tarefa:</label><input type="text" id="tarefa" name="tarefa"><br>
-    
-    <label> Permissioes:</label>
-    <select id="permission" name="permission">
-        {% for perm in all_permissions %}
-        <option value="{{perm.content_type.app_label}}.{{perm.codename}}">{{perm}}</option>
-        {% endfor %}
-    </select><br>
-    
-    <label> Pode ser encerrado:</label>
-    <select id="can_stop" name="can_stop">
-        <option value="True">Sim</option>
-        <option value="False">Não</option>
-    </select><br>
-    
-    <label>Infor:</label><input type="text" id="infor" name="infor"><br>
-    
-    <input type='submit' value="Criar">
-  </form>
+  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Criar Tarefa</button>
+  <div id="demo" class="collapse">
+    <form action="{% url "criar_tarefa" %}" method="POST" class="form-horizontal">
+        
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="control-label col-sm-2">Nome Tarefa:</label>
+            <div class="col-sm-5">
+            <input type="text" id="tarefa" name="tarefa" class="form-control">
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Permissioes:</label>
+            <div class="col-sm-5">
+                <select id="permission" name="permission" class="form-control">
+                    {% for perm in all_permissions %}
+                    <option value="{{perm.content_type.app_label}}.{{perm.codename}}">{{perm}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Pode ser encerrado:</label>
+            <div class="col-sm-2">
+                <select id="can_stop" name="can_stop" class="form-control">
+                    <option value="True">Sim</option>
+                    <option value="False">Não</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Infor:</label>
+            <div class="col-sm-2">
+                <input type="text" id="infor" name="infor" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2 "></label>
+            <div class="col-sm-2">
+                <input type='submit' value="Criar" class='btn btn-success btn-block'>
+            </div>
+        </div>
+        
+
+    </form>
+</div>
 
   
   {% endif %}
@@ -62,9 +91,9 @@
 
         <!-- incio bloco unico -->
         
-        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}"><button>Iniciar</button></a></td>
+        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}"><button class="btn btn-info">Iniciar</button></a></td>
         {% if tarefa.can_stop %}
-        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" permission=tarefa.permission %}"><button>Encerrar</button></td>
+        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" permission=tarefa.permission %}"><button class="btn btn-danger">Encerrar</button></td>
         {% else %}
         <td id="bt_stop_{{tarefa.key}}"style="display: None">N/A</td>
         {% endif %}
@@ -72,7 +101,7 @@
         <!-- fim bloco unico -->
         
         {% if 'admin.add_logentry' in request.user.get_all_permissions %}
-        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}"><button>Deletar</button></td>
+        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}"><button class="btn btn-warning">Deletar</button></td>
         {% endif %}
       </tr>
 

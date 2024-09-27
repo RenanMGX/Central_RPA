@@ -33,10 +33,10 @@ Lista de Registro
           <td>{{item.horario}}</td>
           <td>{{item.descricao}}</td>
           <td>
-            {% if item.exception %}
+            {% if item.exception and  item.exception != 'NoneType: None <br>' %}
             <button type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo_{{item.id}}">Mostrar Error</button>
             <div id="demo_{{item.id}}" class="collapse">
-            {{ item.exception}}
+            <p>{{ item.exception }}</p>
           </div>
           {% endif %}
           

@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <title>{% block title %}Meu Site{% endblock %}</title>
+        <title>{% block title %}Patrimar RPA{% endblock %}</title>
       </head>
       
 <body>
@@ -35,7 +35,10 @@
     </header>
     <div class="content">
         {% block content %}
-        Pagina Inicial
+        <div class="container">
+            <h2>Seja bem vindo {{request.user}}</h2>
+            <a href='#'>alterar a senha</a>
+        </div>
         {% endblock %}
     </div>
 
