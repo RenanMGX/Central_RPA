@@ -10,18 +10,25 @@ from typing import List, Dict
 from time import sleep
 from . import models
 from . import forms
+import asyncio
 
+class TarefasValidas:
+    tarefas = []
+    
+    def listar_tarefas(self) -> List[Tarefas]:  
+        self.tarefas = [Tarefas(pk=x.pk,nome_tarefa=x.tarefa, permission=x.permission, can_stop=x.can_stop, infor=str(x.infor)) for x in models.Tarefas.objects.all()]
+        return self.tarefas
 
-def listar_tarefas() -> List[Tarefas]:  
-    return  [Tarefas(pk=x.pk,nome_tarefa=x.tarefa, permission=x.permission, can_stop=x.can_stop, infor=str(x.infor)) for x in models.Tarefas.objects.all()]
-
+tarefas_validas = TarefasValidas()
+tarefas_validas.listar_tarefas()
+        
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def index(request:WSGIRequest, ):    
     tarefas:List[Tarefas] = []
     #permission_user = [x.codename for x in request.user.user_permissions.all()]#type: ignore  
     for permission in request.user.get_all_permissions(): #type: ignore
-        for tarefa_valida in listar_tarefas():
+        for tarefa_valida in tarefas_validas.tarefas:
             if tarefa_valida.permission == permission:
                 tarefas += [tarefa_valida]
 
@@ -29,7 +36,7 @@ def index(request:WSGIRequest, ):
     content:dict = {
         'tarefas': tarefas,
         'user': request.user,
-        'atualizar_status_auto': True,
+        'atualizar_status_auto': True, #<--------- alterar
         'all_permissions': Permission.objects.all()
     }
     
@@ -38,19 +45,30 @@ def index(request:WSGIRequest, ):
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def status(request: WSGIRequest):
-    tasks:dict = {}
-    for tarefa_perm in listar_tarefas():
-        if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
-            tasks[tarefa_perm.permission] = tarefa_perm.status()
-                #return JsonResponse({'status': tarefa_perm.status()})
+    async def funcao_async(dicio: dict, key, objeto:Tarefas):
+        dicio[key] = objeto.status()
     
-    return JsonResponse(tasks)
+    async def main(user_permissions) -> dict:
+        tasks:dict = {}
+        _tasks = []
+        user_permissions = user_permissions
+        for tarefa_perm in tarefas_validas.tarefas:
+            if tarefa_perm.permission in user_permissions : #type: ignore 
+                _task = asyncio.create_task(funcao_async(tasks, tarefa_perm.key, tarefa_perm))
+                _tasks.append(_task)
+                #tasks[tarefa_perm.key] = tarefa_perm.status()
+                    #return JsonResponse({'status': tarefa_perm.status()})
+        await asyncio.gather(*_tasks)
+        return tasks
+    
+    resultado = asyncio.run(main(request.user.get_all_permissions()))#type: ignore 
+    return JsonResponse(resultado)
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def start_task(request: WSGIRequest, permission): 
     if request.method == "GET":
-        for tarefa_perm in listar_tarefas():
+        for tarefa_perm in tarefas_validas.tarefas:
             if tarefa_perm.permission == permission:
                 if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
                     tarefa_perm.executar()
@@ -63,7 +81,7 @@ def start_task(request: WSGIRequest, permission):
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def stop_task(request: WSGIRequest, permission): 
     if request.method == "GET":
-        for tarefa_perm in listar_tarefas():
+        for tarefa_perm in tarefas_validas.tarefas:
             if tarefa_perm.permission == permission:
                 if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
                     tarefa_perm.encerrar()
@@ -80,6 +98,7 @@ def criar_tarefa(request: WSGIRequest):
         if form.is_valid():
             form.save()
     
+    tarefas_validas.listar_tarefas()
     return redirect('tasks_index')
 
 @login_required()

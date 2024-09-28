@@ -48,7 +48,8 @@ class Tarefas:
             if result:
                 result = result.group().replace("\n",'')
                 return re.sub(r'[ ]{2,}' ,'', result)
-                
+        
+              
         return "Automação Não Encontrada!"
     
     def executar(self):

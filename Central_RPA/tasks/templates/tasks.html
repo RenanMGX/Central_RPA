@@ -127,11 +127,9 @@
                 }
             }
 
-            console.log(response)
-            console.log(resultado)
 
             {% for tarefa in tarefas %}
-            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado['{{tarefa.permission}}']
+            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado['{{tarefa.key}}']
 
             var task_status = document.getElementById("status_{{tarefa.key}}").innerHTML
 

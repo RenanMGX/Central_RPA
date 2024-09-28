@@ -23,12 +23,13 @@ def lista(request:WSGIRequest):
             if value:
                 dados = dados.filter(horario__date=datetime.strptime(value, '%Y-%m-%d'))
     
+    dados.order_by('-id')
     for dado in dados:
         #dado.exception = dado.exception.replace('<br>', '\n') #type: ignore 
         dado.status = str(dado.status).replace('0', 'Concluido').replace('1', 'Error').replace('2', 'report').replace('99', "TESTE")#type: ignore 
     
     content = {
-        "lista" : dados.order_by('-id')
+        "lista" : dados
     }
     return render(request, "lista.html", content)
 
