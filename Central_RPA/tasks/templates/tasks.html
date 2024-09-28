@@ -75,6 +75,7 @@
         <th>ID</th>
         <th>Automação</th>
         <th>Status</th>
+        <th>Proxima Execução</th>
         <th>Informações</th>
         <th>Ação</th>
       </tr>
@@ -86,9 +87,10 @@
     <tr id="tr_{{tarefa.key}}">
         <td>{{tarefa.pk}}</td>
         <td>{{tarefa.nome}}</td>
-        <td id="status_{{tarefa.key}}">{{ tarefa.status }}</td>
+        <td id="status_{{tarefa.key}}">N/A</td>
+        <td id="next_execute_{{tarefa.key}}">N/A</td>
         <td>{{ tarefa.infor }}</td>
-
+        
         <!-- incio bloco unico -->
         
         <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}"><button class="btn btn-info">Iniciar</button></a></td>
@@ -127,9 +129,11 @@
                 }
             }
 
-
+            
             {% for tarefa in tarefas %}
-            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado['{{tarefa.key}}']
+            document.getElementById("status_{{tarefa.key}}").innerHTML = resultado['{{tarefa.nome_para_key}}']['status']
+            document.getElementById("next_execute_{{tarefa.key}}").innerHTML = resultado['{{tarefa.nome_para_key}}']['next_execute']
+            
 
             var task_status = document.getElementById("status_{{tarefa.key}}").innerHTML
 

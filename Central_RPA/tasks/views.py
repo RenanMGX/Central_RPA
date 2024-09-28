@@ -45,24 +45,7 @@ def index(request:WSGIRequest, ):
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def status(request: WSGIRequest):
-    async def funcao_async(dicio: dict, key, objeto:Tarefas):
-        dicio[key] = objeto.status()
-    
-    async def main(user_permissions) -> dict:
-        tasks:dict = {}
-        _tasks = []
-        user_permissions = user_permissions
-        for tarefa_perm in tarefas_validas.tarefas:
-            if tarefa_perm.permission in user_permissions : #type: ignore 
-                _task = asyncio.create_task(funcao_async(tasks, tarefa_perm.key, tarefa_perm))
-                _tasks.append(_task)
-                #tasks[tarefa_perm.key] = tarefa_perm.status()
-                    #return JsonResponse({'status': tarefa_perm.status()})
-        await asyncio.gather(*_tasks)
-        return tasks
-    
-    resultado = asyncio.run(main(request.user.get_all_permissions()))#type: ignore 
-    return JsonResponse(resultado)
+    return JsonResponse(Tarefas.all_status())
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   

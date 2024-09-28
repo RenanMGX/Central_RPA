@@ -25,6 +25,10 @@ class Tarefas:
     def pk(self):
         return self.__pk
     
+    @property
+    def nome_para_key(self):
+        return self.nome.replace("\\","\\\\")
+    
     def __init__(self, *, pk, nome_tarefa:str, permission:str, can_stop:bool=True, infor:str="N/A") -> None:
         self.__nome_tarefa:str = nome_tarefa
         self.__pk = pk
@@ -62,4 +66,24 @@ class Tarefas:
             return result.stdout
         return
 
+    @staticmethod
+    def all_status():
+        saida = subprocess.run(['schtasks', '/query'], capture_output=True, text=True, errors='ignore', encoding='cp850').stdout
+        resultado = {}
+        pastas = saida.split('\n\n')
+        for pasta in pastas:
+            caminho = re.search(r'(?<=Pasta: )[\d\D]+?(?=\n)', pasta)
+            if caminho:
+                caminho = caminho.group()
+                if len(caminho) > 1:
+                    caminho = caminho[1:]
+                else:
+                    caminho = ""                    
+                pasta = re.sub(r'Pasta:[\d\D]+=', '', pasta)
+                for task in pasta.split('\n'):
+                    if task:
+                        task = re.sub(r'[ ]{2,}', ';', task).split(';')
+                        if len(task) == 4:
+                            resultado[f"{caminho}\\{task[0]}"] = {"status": task[2], "next_execute": task[1]}
+        return resultado
 
