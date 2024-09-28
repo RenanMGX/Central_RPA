@@ -10,7 +10,6 @@ from typing import List, Dict
 from time import sleep
 from . import models
 from . import forms
-import asyncio
 
 class TarefasValidas:
     tarefas = []
@@ -36,7 +35,7 @@ def index(request:WSGIRequest, ):
     content:dict = {
         'tarefas': tarefas,
         'user': request.user,
-        'atualizar_status_auto': True, #<--------- alterar
+        'atualizar_status_auto': False, #<--------- alterar
         'all_permissions': Permission.objects.all()
     }
     
@@ -92,4 +91,5 @@ def deletar_tarefa(request: WSGIRequest, pk):
         if item:
             item.delete()
     
+    tarefas_validas.listar_tarefas()
     return redirect('tasks_index')
