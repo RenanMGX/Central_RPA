@@ -14,5 +14,6 @@ urlpatterns = [
     path('status', views.status, name='status'),
     path('criar_tarefa', views.criar_tarefa, name='criar_tarefa'),
     path('deletar_tarefa/<int:pk>', views.deletar_tarefa, name='deletar_tarefa'),
+    path('pagamento_diario/', views.pagamentos_diarios, name='pagamento_diario')
 ]
 

@@ -57,7 +57,8 @@ class Tarefas:
         return "Automação Não Encontrada!"
     
     def executar(self):
-        result = subprocess.run(['schtasks', '/run', '/tn', self.nome], capture_output=True, text=True)
+        result = subprocess.run(['schtasks', '/run', '/tn', self.nome], capture_output=True, text=True, shell=True)
+        print(result)
         return result.stdout
 
     def encerrar(self):
@@ -65,6 +66,7 @@ class Tarefas:
             result = subprocess.run(['schtasks', '/end', '/tn', self.nome], capture_output=True, text=True)
             return result.stdout
         return
+    
 
     @staticmethod
     def all_status():

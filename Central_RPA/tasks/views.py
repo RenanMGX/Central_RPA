@@ -35,7 +35,7 @@ def index(request:WSGIRequest, ):
     content:dict = {
         'tarefas': tarefas,
         'user': request.user,
-        'atualizar_status_auto': False, #<--------- alterar
+        'atualizar_status_auto': True, #<--------- alterar
         'all_permissions': Permission.objects.all()
     }
     
@@ -93,3 +93,8 @@ def deletar_tarefa(request: WSGIRequest, pk):
     
     tarefas_validas.listar_tarefas()
     return redirect('tasks_index')
+
+@login_required
+@permission_required('tasks.pagamentos_diarios', raise_exception=True) #type: ignore
+def pagamentos_diarios(request: WSGIRequest):
+    return render(request, 'pagamento_diario.html')
