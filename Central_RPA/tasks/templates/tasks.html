@@ -91,9 +91,9 @@
         
         <!-- incio bloco unico -->
         
-        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}"><button class="btn btn-info">Iniciar</button></a></td>
+        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}" onclick="return confirmarAcao()"><button class="btn btn-info">Iniciar</button></a></td>
         {% if tarefa.can_stop %}
-        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" permission=tarefa.permission %}"><button class="btn btn-danger">Encerrar</button></td>
+        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" permission=tarefa.permission %}" onclick="return confirmarAcao()"><button class="btn btn-danger">Encerrar</button></td>
         {% else %}
         <td id="bt_stop_{{tarefa.key}}"style="display: None">N/A</td>
         {% endif %}
@@ -101,7 +101,7 @@
         <!-- fim bloco unico -->
         
         {% if 'admin.add_logentry' in request.user.get_all_permissions %}
-        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}"><button class="btn btn-warning">Deletar</button></td>
+        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}" onclick="return confirmarAcao()"><button class="btn btn-warning">Deletar</button></td>
         {% endif %}
       </tr>
 
@@ -111,6 +111,9 @@
   </table>
 </div>
 <script>
+    function confirmarAcao() {
+        return confirm('Você realmente quer prosseguir?');
+      }
     async function verificar(){
         
             var response = await fetch("{% url 'status' %}");

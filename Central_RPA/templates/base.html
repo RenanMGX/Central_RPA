@@ -41,7 +41,10 @@
             <h2>Olá {{request.user.first_name}} {{request.user.last_name}}</h2>
             
 
-            <button class="btn btn-warning" onclick="window.location.href='{% url "alterar_senha" %}';">Alterar Senha</button>
+            <button class="btn btn-warning" onclick="window.location.href='{% url "alterar_senha" %}';">Alterar Senha</button><br><br>
+            {% if request.user.is_superuser %}
+            <button class="btn btn-danger" onclick="window.location.href='admin/';">Administrador</button><br><br>
+            {% endif %}
         </div>
         {% endblock %}
     </div>

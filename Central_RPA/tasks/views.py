@@ -45,8 +45,8 @@ def index(request:WSGIRequest, ):
     
     return render(request, 'tasks.html', content)
 
+#@permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 @login_required()
-@permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def status(request: WSGIRequest):
     return JsonResponse(Tarefas.all_status())
 
