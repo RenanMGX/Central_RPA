@@ -14,6 +14,9 @@ urlpatterns = [
     path('status', views.status, name='status'),
     path('criar_tarefa', views.criar_tarefa, name='criar_tarefa'),
     path('deletar_tarefa/<int:pk>', views.deletar_tarefa, name='deletar_tarefa'),
-    path('pagamento_diario/', views.pagamentos_diarios, name='pagamento_diario')
+    path('pagamento_diario/', views.pagamentos_diarios, name='pagamento_diario'),
+    path('pagamentos_diarios_iniciar/', views.pagamentos_diarios_iniciar, name='pagamentos_diarios_iniciar'),
+    path('retorno_informativo/<str:path>', views.retorno_informativo, name='retorno_informativo'),
+    
 ]
 

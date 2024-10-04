@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    tasks
+tasks
 {% endblock %}
 
 {% block content %}
@@ -11,5 +11,156 @@
   <h2>Pagamentos Diarios</h2>
   <p>Você pode iniciar as tarefas com um simples clique.</p>
 
+  <div id="formulario_start" style="display: None;">
+    <form action="{% url "pagamentos_diarios_iniciar" %}" method="POST" class="form-horizontal" onsubmit="return confirmarEnvio()">
+      {% csrf_token %}
+      <input type='hidden' name='path' id='path' value='{{django_argv_path}}'>
+      <input type='hidden' name='path_informativo' id='path_informativo' value='{{informativo_pgmt_diario_path}}'>
 
-{% endblock %}
+      <div class="form-group">
+        <label class="control-label col-sm-5">Data da execução dos pagamentos</label>
+        <div class="col-sm-3">
+          <input type="date" id="data" name="data" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-5">Boletos: </label>
+        <div class="col-sm-2">
+          <input type="checkbox" id="boleto" name="boleto" class="form-control" style="width:15%; height:20px " checked>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-5">Consumo: </label>
+        <div class="col-sm-2">
+          <input type="checkbox" id="consumo" name="consumo" class="form-control" style="width:15%; height:20px "
+            checked>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-5">Imposto: </label>
+        <div class="col-sm-2">
+          <input type="checkbox" id="imposto" name="imposto" class="form-control" style="width:15%; height:20px "
+            checked>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-5">Darfs: </label>
+        <div class="col-sm-2">
+          <input type="checkbox" id="darfs" name="darfs" class="form-control" style="width:15%; height:20px " checked>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-5">Relacionais: </label>
+        <div class="col-sm-2">
+          <input type="checkbox" id="relacionais" name="relacionais" class="form-control"
+            style="width:15%; height:20px " checked>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-5"></label>
+        <div class="col-sm-3">
+          <button type="submit" class="btn btn-success btn-block" id="iniciar" value="iniciar">Iniciar</button>
+        </div>
+      </div>
+
+
+    </form>
+  </div>
+
+  <div id="formulario_start">
+    <label class="control-label col-sm-2">Status: </label>
+    <div class="col-sm-2">
+      <label class="control-label col-sm-2" id="status"></label>
+    </div>
+  </div>
+  
+  <br>
+  <table class="table">
+    <thead class="table-success">
+      <tr>
+        <th>Mensagem</th>
+      </tr>
+    </thead>
+    <tbody id="textos">
+      
+        <!-- {% for text in informativo_pgmt_diario_texts %}
+        <tr></tr>
+        <td>{{text}}</td>
+      </tr>
+        {% endfor %} -->
+      
+    </tbody>
+  </table>
+
+    <script>
+      function confirmarEnvio() {
+        return confirm('Você realmente quer prosseguir?');
+      }      
+      document.addEventListener('DOMContentLoaded', (event) => {
+        var dataAtual = new Date().toISOString().substring(0, 10);
+        document.getElementById('data').value = dataAtual;
+      });
+
+      async function verificar() {
+
+        var response = await fetch("{% url 'status' %}");
+
+        if (!response.ok) {
+          resultado = `${response.status} - ${response.statusText}`
+        } else {
+          try {
+            resultado = await response.json()
+            resultado = resultado
+          } catch (error) {
+            resultado = `Erro: ${error}`
+          }
+        }
+
+        status_return = resultado['{{tarefa.nome_para_key}}']['status']
+
+        status_element = document.getElementById('status');
+        status_element.innerHTML = status_return
+
+        if (status_return != "Pronto") {
+          document.getElementById("formulario_start").style = "display:none"
+        }else{
+          document.getElementById("formulario_start").style = ""
+        }
+
+        
+        
+        response_text = await fetch("{% url 'retorno_informativo' path=informativo_pgmt_diario_path %}");
+
+        if (!response_text.ok) {
+          resultado_text = `${response_text.status} - ${response_text.statusText}`
+        } else {
+          try {
+            resultado_text = await response_text.json()
+            resultado_text = resultado_text
+          } catch (error) {
+            resultado_text = `Erro: ${error}`
+          }
+        }
+
+        document.getElementById('textos').innerHTML = ""
+        resultado_text.reverse();
+        resultado_text.forEach(item => {
+          document.getElementById('textos').innerHTML += "<tr><td>" + item + "</td></tr>"
+  
+        })
+
+      }
+
+      verificar()
+      setInterval(verificar, 1000)
+
+    </script>
+
+
+    {% endblock %}
