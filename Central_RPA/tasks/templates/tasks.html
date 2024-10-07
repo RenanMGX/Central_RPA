@@ -91,9 +91,9 @@
         
         <!-- incio bloco unico -->
         
-        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" permission=tarefa.permission %}" onclick="return confirmarAcao()"><button class="btn btn-info">Iniciar</button></a></td>
+        <td id="bt_exec_{{tarefa.key}}" style="display: None"><a href="{% url "start_task" nome_para_key=tarefa.nome_para_key %}" onclick="return confirmarAcao()"><button class="btn btn-info">Iniciar</button></a></td>
         {% if tarefa.can_stop %}
-        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" permission=tarefa.permission %}" onclick="return confirmarAcao()"><button class="btn btn-danger">Encerrar</button></td>
+        <td id="bt_stop_{{tarefa.key}}"style="display: None"><a href="{% url "stop_task" nome_para_key=tarefa.nome_para_key %}" onclick="return confirmarAcao()"><button class="btn btn-danger">Encerrar</button></td>
         {% else %}
         <td id="bt_stop_{{tarefa.key}}"style="display: None">N/A</td>
         {% endif %}

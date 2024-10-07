@@ -52,10 +52,10 @@ def status(request: WSGIRequest):
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
-def start_task(request: WSGIRequest, permission): 
+def start_task(request: WSGIRequest, nome_para_key): 
     if request.method == "GET":
         for tarefa_perm in tarefas_validas.tarefas:
-            if tarefa_perm.permission == permission:
+            if tarefa_perm.nome_para_key == nome_para_key:
                 if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
                     tarefa_perm.executar()
                     return redirect('tasks_index')
@@ -65,10 +65,10 @@ def start_task(request: WSGIRequest, permission):
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
-def stop_task(request: WSGIRequest, permission): 
+def stop_task(request: WSGIRequest, nome_para_key): 
     if request.method == "GET":
         for tarefa_perm in tarefas_validas.tarefas:
-            if tarefa_perm.permission == permission:
+            if tarefa_perm.nome_para_key == nome_para_key:
                 if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
                     tarefa_perm.encerrar()
                     return redirect('tasks_index')
