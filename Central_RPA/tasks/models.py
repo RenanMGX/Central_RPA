@@ -18,5 +18,8 @@ class Tarefas(models.Model):
     
     def __str__(self) -> str:
         return f"{self.tarefa} : {self.permission}"
-
-
+    
+class RegistroExec(models.Model):
+    id_usuario = models.IntegerField()
+    nome_tarefa = models.TextField()
+    data_exec = models.DateTimeField()

@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .Entities.tarefas import Tarefas
 from .Entities.informativo_task import Informativo
+from .Entities.registrar_exec import registrar
 from typing import List, Dict
 from time import sleep
 from . import models
@@ -27,7 +28,7 @@ tarefas_validas.listar_tarefas()
         
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
-def index(request:WSGIRequest, ):    
+def index(request:WSGIRequest,):
     tarefas:List[Tarefas] = []
     #permission_user = [x.codename for x in request.user.user_permissions.all()]#type: ignore  
     for permission in request.user.get_all_permissions(): #type: ignore
@@ -58,6 +59,7 @@ def start_task(request: WSGIRequest, nome_para_key):
             if tarefa_perm.nome_para_key == nome_para_key:
                 if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
                     tarefa_perm.executar()
+                    registrar(request, task=tarefa_perm.nome)
                     return redirect('tasks_index')
     
     return redirect('tasks_index')
@@ -122,12 +124,23 @@ def pagamentos_diarios(request: WSGIRequest):
             django_argv_path = path
     except json.JSONDecodeError as e:
         print(e)
+        
+    execucoes = models.RegistroExec.objects.all()
+    ".filter(nome_tarefa=task.nome)"
+    ultimo_executor:dict = {"nome": "Não Disponivel", "data":"Não Disponivel"}
+    if (ultimo_executor_obj:=execucoes.filter(nome_tarefa=task.nome).last()):
+        id_ultimo_executor = ultimo_executor_obj.id_usuario
+        ultimo_executor['nome'] = str(User.objects.get(id=id_ultimo_executor))
+        ultimo_executor['data'] = ultimo_executor_obj.data_exec
+        
+        
     
     content:dict = {
         "tarefa": task,
         "informativo_pgmt_diario_texts" : reversed(informativo_pgmt_diario_texts),
         "informativo_pgmt_diario_path" : informativo_pgmt_diario_path,
-        "django_argv_path": django_argv_path
+        "django_argv_path": django_argv_path,
+        "ultimo_executor": ultimo_executor
     }
     return render(request, 'pagamento_diario.html', content)
 
@@ -193,11 +206,8 @@ def pagamentos_diarios_iniciar(request: WSGIRequest):
                     if tarefa_valida.permission == permission:
                         if 'Pagamentos Diarios' in tarefa_valida.nome_para_key:
                             tarefas += [tarefa_valida]
-            
             #tarefas[0].
             task = tarefas[0]
+            registrar(request, task=task.nome)
             task.executar()
-
-
-        
     return redirect('pagamento_diario')
