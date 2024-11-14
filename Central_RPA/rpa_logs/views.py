@@ -29,7 +29,7 @@ def lista(request:WSGIRequest):
         dado.status = str(dado.status).replace('0', 'Concluido').replace('1', 'Error').replace('2', 'report').replace('99', "TESTE")#type: ignore 
     
     content = {
-        "lista" : dados
+        "lista" : reversed(dados)
     }
     return render(request, "lista.html", content)
 

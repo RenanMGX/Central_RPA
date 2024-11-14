@@ -22,6 +22,7 @@ from django.shortcuts import redirect
 from . import views
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
+from visualizar_tela import views as visualizar
 
 
 def sair(request):
@@ -37,5 +38,7 @@ urlpatterns = [
     path('logout/', sair, name="logout"),
     path('', views.index, name='home_index'),
     #path('alterar_senha', PasswordChangeView.as_view(template_name='alterar_senha.html', success_url=reverse_lazy('home_index')), name='alterar_senha')
-    path('alterar_senha', views.AlterarSenha.as_view(), name='alterar_senha')
+    path('alterar_senha', views.AlterarSenha.as_view(), name='alterar_senha'),
+    path('visu/', visualizar.visualizar_tela, name='visu'),
+    path('visu_atu/', visualizar.atualizar_tela, name='visu_atu'),
 ]

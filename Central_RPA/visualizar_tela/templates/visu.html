@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Visualizar Tela
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <img id="tela" src="data:image/png;base64,{{ tela_print }}" alt="print" width="100%">
+</div>
+<script>
+async function atualizar_tela(){
+    response = await fetch("{% url 'visu_atu' %}");
+    result = await response.json()
+
+    document.getElementById("tela").src = `data:image/png;base64,${result.tela_print}`
+}
+
+atualizar_tela()
+setInterval(atualizar_tela, 1000)
+</script>
+
+{% endblock %}
