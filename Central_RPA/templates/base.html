@@ -49,7 +49,7 @@
         {% block content %}
         <div class="container">
             <h2>Olá {{request.user.first_name}} {{request.user.last_name}}</h2>
-            
+            <p>Bem-vindo(a) à Central de RPA, desenvolvida pelo Renan Oliveira para agilizar e facilitar a execução de tarefas pelos usuários.</p>
 
             <button class="btn btn-warning" onclick="window.location.href='{% url "alterar_senha" %}';">Alterar Senha</button><br><br>
             {% if request.user.is_superuser %}

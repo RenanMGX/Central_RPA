@@ -62,7 +62,8 @@ def list_files(request: WSGIRequest):
 
     return JsonResponse(result)
 
-
+@login_required()
+@permission_required('tasks.processComi', raise_exception=True)
 def download_file(request: WSGIRequest):
     if request.method == "GET":
         file_path = request.GET.get('path')
