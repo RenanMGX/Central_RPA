@@ -157,7 +157,7 @@ def retorno_informativo(request: WSGIRequest, path):
 def pagamentos_diarios_iniciar(request: WSGIRequest):
     if request.method == "POST":
         post = request.POST
-        print(post)
+        #print(post)
         
         path_informativo = str(post.get('path_informativo'))
         if post.get(path_informativo):

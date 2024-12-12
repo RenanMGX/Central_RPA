@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Visualizar Tela
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+  <h2>Área de Automação para o Processo de Comissão</h2>
+
+  <p>selecione uma data e aguarde a conclusão da execução. Após a finalização bem-sucedida, o arquivo aparecerá na lista abaixo para download</p>
+
+
+  <div id="formulario_start" style="display: flex;">
+    <form action="{% url 'processComi_start'%}" method="POST" class="form-horizontal" onsubmit="return confirm('Você realmente quer prosseguir?')">
+
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="control-label col-sm-6">Data da execução: </label>
+        <div class="col-sm-6">
+          <input type="date" id="data" name="data" value="{{date}}" class="form-control">
+        </div>
+      </div>
+
+
+      <div class="form-group">
+        <label class="control-label col-sm-6"></label>
+        <div class="col-sm-6">
+          <button type="submit" class="btn btn-success btn-block" value="iniciar"  id="bt_iniciar" style="display:None">Iniciar</button>
+          <span class="badge badge-warning" id="log_status" style="display:None">Executando</span>
+        </div>
+      </div>
+    </form>
+    
+</div>
+
+  <table class="table">
+    <thead class="table-success">
+      <tr>
+        <th>Arquivos Batch Input</th>
+      </tr>
+    </thead>
+
+    <tbody id="lista_files">
+      <!-- <span id="lista_files"></span> -->
+      
+    </tbody>
+  </table>
+  <script>
+    
+    async function status(){    
+      var response = await fetch("{% url 'processComi_status' %}")
+  if (!response.ok){
+    return
+  }
+  response = await response.json()
+  if (response['status'] == "Pronto"){
+    document.getElementById("bt_iniciar").style = ""
+    document.getElementById("log_status").style = "display:None"
+  } else {
+    document.getElementById("bt_iniciar").style = "display:None"
+    document.getElementById("log_status").style = ""
+  }
+}
+
+async function list_files(){
+  var response = await fetch("{% url 'processComi_list_files' %}");
+  if (!response.ok){
+    return
+  }
+  data = await response.json()
+  //console.log(response)
+  
+  var lista_arquivos = ""
+  
+  for (let key in data){
+      lista_arquivos += "<tr>";
+      //lista_arquivos += "<td>" + key + "</td>";
+      lista_arquivos += "<td><a href=\"{% url 'processComi_download' %}?path=" + data[key] + "\"> " + key + "</a></td>";
+      lista_arquivos += "</tr>";
+  }
+  
+  console.log(lista_arquivos)
+  document.getElementById("lista_files").innerHTML = lista_arquivos;
+
+          
+};
+
+list_files()
+status()
+//setInterval(status, 1000)
+//setInterval(list_files, 1000)
+</script>
+
+{% endblock %}

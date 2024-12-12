@@ -20,16 +20,25 @@
                   <a class="navbar-brand" href="{% url "home_index" %}">Patrimar RPA</a>
                 </div>
             <ul class="nav navbar-nav">
+
                 <li {% if request.path == '/' %}class="active"{% endif %} >
                     <a href="{% url "home_index" %}">Home</a></li>
+
                 {% if 'rpa_logs.log.user' in request.user.get_all_permissions %}<li {% if request.path == '/rpa_logs/' %}class="active"{% endif %} >
                     <a href="{% url "filtro" %}">RPA_logs</a></li>{% endif %}
+
                 {% if 'tasks.tasks' in request.user.get_all_permissions %}<li {% if request.path == '/tasks/' %}class="active"{% endif %} >
                     <a href="{% url "tasks_index" %}">Tarefas</a></li>{% endif %}
+
                 {% if 'tasks.pagamentos_diarios' in request.user.get_all_permissions %}<li {% if request.path == '/tasks/pagamento_diario/' %}class="active"{% endif %} >
                     <a href="{% url "pagamento_diario" %}">Pagamentos Diarios</a></li>{% endif %}
+
                 {% if 'admin.visu' in request.user.get_all_permissions %}<li {% if request.path == '/visu/' %}class="active"{% endif %} >
-                    <a href="{% url "visu" %}">Vizualizar Tela</a></li>{% endif %}                </ul>
+                    <a href="{% url "visu" %}">Vizualizar Tela</a></li>{% endif %} 
+
+                {% if 'tasks.processComi' in request.user.get_all_permissions %}<li {% if request.path == '/processComi/' %}class="active"{% endif %} >
+                    <a href="{% url "processComi_index" %}">Processo de Comissão</a></li>{% endif %} 
+            </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="bt_logout"><a href="{% url 'logout' %}">logout</a></li>
               </ul>            
