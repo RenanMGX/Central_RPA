@@ -20,11 +20,14 @@ class Preparar:
     
     @staticmethod
     def verificar_pasta() -> list:
-        return [os.path.join(Preparar.download_path, x) for x in os.listdir(Preparar.download_path) if os.path.isfile(os.path.join(Preparar.download_path, x))]
+        return sorted([os.path.join(Preparar.download_path, x) for x in os.listdir(Preparar.download_path) if os.path.isfile(os.path.join(Preparar.download_path, x))], key=lambda x: os.path.getmtime(os.path.join(Preparar.download_path, x)), reverse=True)
     
     @staticmethod
-    def limpar_pasta():
+    def limpar_pasta(num_arquivos=10):
+        nao_apagar =sorted([x for x in os.listdir(Preparar.download_path)], key=lambda x: os.path.getmtime(os.path.join(Preparar.download_path, x)), reverse=True)[0:num_arquivos]
         for file in os.listdir(Preparar.download_path):
+            if file in nao_apagar:
+                continue
             file = os.path.join(Preparar.download_path, file)
             try:
                 os.unlink(file)
