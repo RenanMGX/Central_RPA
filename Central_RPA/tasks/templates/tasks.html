@@ -15,7 +15,7 @@
   {% if 'admin.add_logentry' in request.user.get_all_permissions %}
   <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Criar Tarefa</button>
   <div id="demo" class="collapse">
-    <form action="{% url "criar_tarefa" %}" method="POST" class="form-horizontal">
+    <form action="{% url "criar_tarefa" %}" method="POST" class="form-horizontal" onsubmit="return confirm('Você realmente quer prosseguir?')">
         
         {% csrf_token %}
         <div class="form-group">
@@ -72,6 +72,7 @@
   <table class="table">
     <thead>
       <tr>
+        <th>Id</th>
         <th>Automação</th>
         <th>Status</th>
         <th>Proxima Execução</th>
@@ -84,6 +85,7 @@
     {% for tarefa in tarefas %}
 
     <tr id="tr_{{tarefa.key}}">
+        <td>{{ tarefa.pk }}</td>
         <td>{{tarefa.nome}}</td>
         <td id="status_{{tarefa.key}}">N/A</td>
         <td id="next_execute_{{tarefa.key}}">N/A</td>
@@ -101,7 +103,9 @@
         <!-- fim bloco unico -->
         
         {% if 'admin.add_logentry' in request.user.get_all_permissions %}
-        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}" onclick="return confirmarAcao()"><button class="btn btn-warning">Deletar</button></td>
+        <td>|</td>
+        <td><a href="{% url "deletar_tarefa" pk=tarefa.pk %}" onclick="return confirmarAcao()"><button class="btn btn-danger">Deletar</button></td>
+        <td><a href="{% url "alter_form_task" pk=tarefa.pk %}"><button class="btn btn-warning">Alterar</button></td>
         {% endif %}
       </tr>
 
@@ -143,14 +147,14 @@
 
             if (task_status == "Pronto"){
                 document.getElementById("tr_{{tarefa.key}}").className = "warning"
-                document.getElementById("bt_exec_{{tarefa.key}}").style = "display: flex; justify-content:center"
+                document.getElementById("bt_exec_{{tarefa.key}}").style = ""
 
             }else if (task_status == "Em execução"){
                 document.getElementById("tr_{{tarefa.key}}").className = "success"
-                document.getElementById("bt_stop_{{tarefa.key}}").style = "display: flex; justify-content:center"
+                document.getElementById("bt_stop_{{tarefa.key}}").style = ""
             }else {
                 document.getElementById("tr_{{tarefa.key}}").className = "danger"
-                document.getElementById("bt_hidden_{{tarefa.key}}").style = "display: flex; justify-content:center"
+                document.getElementById("bt_hidden_{{tarefa.key}}").style = ""
             }
 
         {% endfor %}

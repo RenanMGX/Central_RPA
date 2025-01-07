@@ -43,6 +43,9 @@ class Tarefas:
     def __str__(self) -> str:
         return self.nome
     
+    def __repr__(self)-> str:
+        return self.nome
+    
     # Função para verificar o status de uma tarefa
     def status(self) -> str:
         result = subprocess.run(['schtasks', '/query', '/tn', self.__nome_tarefa, '/fo', 'LIST', '/v'], capture_output=True, text=True, encoding='cp850')

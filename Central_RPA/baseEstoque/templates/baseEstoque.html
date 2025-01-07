@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Visualizar Tela
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+  <h2>Área de Automação para o Base de Estoque</h2>
+
+  {% comment %} <p>selecione uma data e aguarde a conclusão da execução. Após a finalização bem-sucedida, o arquivo aparecerá na lista abaixo para download</p> {% endcomment %}
+
+
+  <div id="formulario_start" style="display: flex;">
+    <p style="display:none" id="tag_formulario">Em Execução</p>
+    <form  action="{% url 'baseEstoque_upload' %}" method="POST" class="form-horizontal" onsubmit="return verific()" enctype="multipart/form-data" id="formulario">
+
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <div class="form-group">
+        <label class="control-label col-sm-2">Arquivo: </label>
+        <div class="col-sm-10">
+          <input type="file" id="file" name="file" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" name="vgv_empreendimento" id="vgv_empreendimento" checked> VGV Empreendimento
+        </label>
+      </div>
+
+      <div class="form-check" style="display: none;">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" name="integração_web" id="integração_web"> Integração WEB
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-6"></label>
+        <div class="col-sm-6">
+          <button type="submit" class="btn btn-success btn-block" value="iniciar"  id="bt_iniciar">Iniciar</button>
+          <!-- <span class="badge badge-warning" id="log_status">Executando</span> -->
+        </div>
+      </div>
+    </form>
+    
+</div>
+
+<script>
+  function verific(){
+    var x = document.getElementById("vgv_empreendimento").checked;
+    var y = document.getElementById("integração_web").checked;
+    console.log(x, y)
+    if (x || y){
+      return confirm('Você realmente quer prosseguir?')
+    }else{
+      alert("selecione pelo menos 1 checkbox")
+      return false
+    }
+  }
+  async function status(){
+    var response = await fetch("{% url 'status' %}")
+    var data = await response.json()
+    console.log("")
+    
+    Object.entries(data).forEach(function(item) {
+      if (item[0] == "{{item.tarefa|escapejs}}"){
+        var status = item[1].status
+        if (status != "Pronto"){
+          document.getElementById("tag_formulario").style.display = "block"
+          document.getElementById("formulario").style.display = "none"
+        }
+      }
+  });
+
+  }
+status()
+setInterval(status, 5000)
+
+//onsubmit="return confirm('Você realmente quer prosseguir?')"
+</script> 
+
+{% endblock %}

@@ -41,5 +41,6 @@ urlpatterns = [
     path('alterar_senha', views.AlterarSenha.as_view(), name='alterar_senha'),
     path('visu/', visualizar.visualizar_tela, name='visu'),
     path('visu_atu/', visualizar.atualizar_tela, name='visu_atu'),
-    path('processComi/', include('processComi.urls'))
+    path('processComi/', include('processComi.urls')),
+    path('baseEstoque/', include('baseEstoque.urls'))
 ]

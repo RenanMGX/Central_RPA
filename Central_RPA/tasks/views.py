@@ -29,6 +29,7 @@ tarefas_validas.listar_tarefas()
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def index(request:WSGIRequest,):
+    tarefas_validas.listar_tarefas()
     tarefas:List[Tarefas] = []
     #permission_user = [x.codename for x in request.user.user_permissions.all()]#type: ignore  
     for permission in request.user.get_all_permissions(): #type: ignore
@@ -36,6 +37,7 @@ def index(request:WSGIRequest,):
             if tarefa_valida.permission == permission:
                 tarefas += [tarefa_valida]
 
+    tarefas.sort(key=lambda x: x.nome)
    
     content:dict = {
         'tarefas': tarefas,
@@ -99,6 +101,41 @@ def deletar_tarefa(request: WSGIRequest, pk):
     
     tarefas_validas.listar_tarefas()
     return redirect('tasks_index')
+
+
+
+@login_required()
+@permission_required('admin.add_logentry', raise_exception=True) #type: ignore
+def alterar_tarefa(request: WSGIRequest, pk):
+    if request.method == "POST":
+        form = request.POST
+        item = get_object_or_404(models.Tarefas, pk=pk)
+        
+        if (tarefa:=form.get('tarefa')):
+            item.tarefa = tarefa
+        if (permission:=form.get('permission')):
+            item.permission = permission
+        if (can_stop:=form.get('can_stop')):
+            item.can_stop = bool(can_stop)
+        if (infor:=form.get('infor')):
+            item.infor = infor
+            
+        item.save()
+                
+    return redirect('tasks_index')
+
+@login_required()
+@permission_required('admin.add_logentry', raise_exception=True) #type: ignore
+def alterar_tarefa_form(request: WSGIRequest, pk):
+    item = get_object_or_404(models.Tarefas, pk=pk)
+    if item:
+        content = {
+            "item": item,
+            'all_permissions': Permission.objects.all()
+        }
+        return render(request, "tasks_alterar.html", content)
+    return redirect('tasks_index')
+
 
 @login_required
 @permission_required('tasks.pagamentos_diarios', raise_exception=True) #type: ignore

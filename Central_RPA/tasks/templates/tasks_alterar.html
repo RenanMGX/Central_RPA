@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    tasks
+{% endblock %}
+
+{% block content %}
+<!-- <meta http-equiv="refresh" content=".1"> -->
+
+<div class="container">
+  <h2>Tarefas de Automações</h2>
+  <p>alterar dados da Tarefa.</p>
+  <p>Id da tarefa: {{item.pk}}</p>
+
+    <form action="{% url 'alter_task' pk=item.pk%}" method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="control-label col-sm-2">Nome Tarefa:</label>
+            <div class="col-sm-5">
+            <input type="text" id="tarefa" name="tarefa" value="{{item.tarefa}}" class="form-control">
+            </div>
+        </div>
+
+        
+        <div class="form-group">
+            <label class="control-label col-sm-2">Permissioes:</label>
+            <div class="col-sm-5">
+                <select id="permission" name="permission" class="form-control">
+                    {% for perm in all_permissions %}
+                        {% with perm.content_type.app_label|add:"."|add:perm.codename as perm_concat%}
+                            <option value="{{perm_concat}}" {% if item.permission == perm_concat %}selected{% endif %}>{{perm}}</option>
+                        {% endwith %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Pode ser encerrado:</label>
+            <div class="col-sm-2">
+                <select id="can_stop" name="can_stop" class="form-control">
+                    <option value="True" {% if item.can_stop == True%}selected{%endif%}>Sim</option>
+                    <option value="False" {% if item.can_stop == False%}selected{%endif%}>Não</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Infor:</label>
+            <div class="col-sm-2">
+                <textarea type="textarea" id="infor" name="infor" class="form-control" style="width:300%">{{item.infor}}</textarea>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-sm-2">
+                <button class='btn btn-success btn-block' onclick="window.location.href='{% url "tasks_index" %}';">Voltar</button>
+            </div>
+            <label class="control-label col-sm-2 "></label>
+            <div class="col-sm-2">
+                <input type='submit' value="Alterar" class='btn btn-warning btn-block'  onclick="return confirm('Você realmente quer prosseguir?')">
+            </div>
+        </div>
+        
+        
+    </form>
+
+{% endblock %}
