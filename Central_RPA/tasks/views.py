@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Permission
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from .Entities.tarefas import Tarefas
+from .Entities.new_tasks import NewTasks
 from .Entities.informativo_task import Informativo
 from .Entities.registrar_exec import registrar
 from typing import List, Dict
@@ -16,6 +17,58 @@ import json
 from datetime import datetime
 import os
 
+
+class ValidNewTasks:
+    @property
+    def lista(self) -> List[dict]:
+        return [x.propriedades for x in self.__lista]
+    
+    @property
+    def tasks(self) -> List[NewTasks]:
+        return self.__lista
+        
+    def __init__(self):
+        self.__lista = []
+        self.atualizar()
+        
+    def atualizar(self):
+        self.__lista = NewTasks.listar_tarefas(['Automações'])
+        
+new_tasks = ValidNewTasks()
+
+@login_required()
+@permission_required('tasks.tasks', raise_exception=True) #type: ignore   
+def index(request:WSGIRequest,):
+    new_tasks.atualizar()    
+    return render(request, 'new_tasks.html')
+
+@login_required()
+@permission_required('tasks.tasks', raise_exception=True) #type: ignore
+def list_tasks(request:WSGIRequest):
+    #new_tasks.atualizar()
+    if not request.user.is_superuser:
+        result = [x for x in new_tasks.lista if x['permission'] in request.user.get_all_permissions()]
+    else:
+        result = new_tasks.lista 
+    result.sort(key=lambda x: x['Nome'])
+    return JsonResponse(result, safe=False)
+
+@login_required()
+def start_newTask(request:WSGIRequest):
+    if (name:=request.GET.get("name_newTask")):
+        for new_task in new_tasks.tasks:
+            if new_task.nome == name:
+                if (new_task.permission in request.user.get_all_permissions() or request.user.is_superuser):
+                    if (action:=request.GET.get("action")):
+                        if action == "start":
+                            new_task.start()
+
+                        elif action == "stop":
+                            new_task.stop()
+                break
+    return 
+
+##############################
 class TarefasValidas:
     tarefas = []
     
@@ -28,7 +81,7 @@ tarefas_validas.listar_tarefas()
         
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
-def index(request:WSGIRequest,):
+def index_old(request:WSGIRequest,):
     tarefas_validas.listar_tarefas()
     tarefas:List[Tarefas] = []
     #permission_user = [x.codename for x in request.user.user_permissions.all()]#type: ignore  

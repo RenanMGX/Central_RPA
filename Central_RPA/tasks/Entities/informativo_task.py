@@ -4,8 +4,8 @@ import traceback
 
 class Informativo:
     def __init__(self, path:str) -> None:
-        if not os.path.exists(path):
-            raise FileNotFoundError("arquivo não encontrado")
+        #if not os.path.exists(path):
+        #    raise FileNotFoundError("arquivo não encontrado")
         self.__path:str = path
         
     def read(self) -> list:

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    tasks
+{% endblock %}
+
+{% block content %}
+<!-- <meta http-equiv="refresh" content=".1"> -->
+
+<div class="container">
+  <h2>Tarefas de Automações</h2>
+  <p>Você pode iniciar as tarefas com um simples clique.</p>
+  <p id="num_autom"></p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        {% comment %} <th>Id</th> {% endcomment %}
+        <th>Automação</th>
+        <th>Status</th>
+        <th>Ultima Execução</th>
+        <th>Proxima Execução</th>
+        <th>Json File</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody id="tabela">
+    
+
+    </tbody>
+  </table>
+</div>
+<script>
+    async function chamar_task(name, action){
+        if (confirm('Você realmente quer prosseguir?')){
+            await fetch(`{% url 'start_newTask'%}?name_newTask=${name}&action=${action}`);
+        }        
+    }
+
+    async function tasks(){
+        var response = await fetch("{% url 'list_tasks' %}");
+        const dados = await response.json();
+        document.getElementById('num_autom').innerHTML = `Número de Automações: ${dados.length}`
+
+        document.getElementById('tabela').innerHTML = ""
+        Object.entries(dados).forEach(function(data) {
+            create_line(data[1]);
+        });
+    };
+
+    function create_line(data){
+        var class_name = data.Status == 'Pronto' ? 'success' : 'danger';
+        
+        var bt_exec = '';
+        if (data.Status == 'Pronto'){
+            bt_exec = `<button onclick="chamar_task('${data.Nome}', 'start')" class="btn btn-info">Iniciar</button></a>`
+        } else{
+            if (data.can_stop){
+                bt_exec = `<button onclick="chamar_task('${data.Nome}', 'stop')" class="btn btn-danger">Encerrar</button></a>`
+            }
+        }
+        
+ 
+        document.getElementById('tabela').innerHTML += `
+            <tr class="${class_name}">
+                <td>${data.Nome}</td>
+                <td>${data.Status}</td>
+                <td>${data["Ultima Execução"]}</td>
+                <td>${data["Proxima Execução"]}</td>
+                <td>${JSON.stringify(data.json_file)}</td>
+                <td>${bt_exec}</td>
+            </tr>
+        `;
+    }
+
+
+    tasks();
+    setInterval(tasks, 1000);
+</script>
+
+{% endblock %}
