@@ -32,7 +32,7 @@ def sair(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/rpa_logs/', include('rpa_logs.urls')),
-    path('rpa_logs/', include('rpa_logs.urls'), name='rpa_logs'),
+    path('rpa_logs/', include('rpa_logs.urls'), name='rpa_logs'),#
     path('tasks/', include('tasks.urls')),
     path('login/', views.login, name="login"),
     path('logout/', sair, name="logout"),

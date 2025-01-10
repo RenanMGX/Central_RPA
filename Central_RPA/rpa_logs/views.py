@@ -38,8 +38,14 @@ def lista(request:WSGIRequest):
 def filtro_lista(request: WSGIRequest):
     dados = models.registro.objects.all()
     nome_rpa = list(set([x.nome_rpa for x in dados]))
+    nome_rpa.sort()
+    
     nome_pc = list(set([x.nome_pc for x in dados]))
+    nome_pc.sort() #type: ignore
+    
     nome_agente = list(set([x.nome_agente for x in dados]))
+    nome_agente.sort() #type: ignore
+    
     status = list(set([x.status for x in dados]))
     now = datetime.now().strftime("%Y-%m-%d")
         
