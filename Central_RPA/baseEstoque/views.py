@@ -5,12 +5,11 @@ from tasks.models import Tarefas
 import json
 import os
 from getpass import getuser
-from django.http import HttpResponse, Http404
-from django.urls import reverse
 from datetime import datetime
 import shutil
 import pandas as pd
 from tasks.views import tarefas_validas
+from Central_RPA.utils import Utils
 
 def start_task(pk) -> bool:
     pk = int(pk)
@@ -41,7 +40,7 @@ def file(requests:WSGIRequest):
         
         path_download = f'C:\\Users\\{getuser()}\\Downloads'
         if not os.path.exists(path_download):
-            return message_retorno(f'Erro 02: a pasta do download não encontrada "{path_download}"')
+            return Utils.message_retorno(f'Erro 02: a pasta do download não encontrada "{path_download}"')
         
         path_rpa:str = infor['vgv'] if infor.get('vgv') else ""
 
@@ -56,14 +55,14 @@ def file(requests:WSGIRequest):
                             _file.write(chunk) 
                     
                     if not infor.get('sheet'):
-                        return message_retorno("Erro 06: sheet não encontrada")
+                        return Utils.message_retorno("Erro 06: sheet não encontrada")
                         
                     sheet = infor.get('sheet')
                      
                     try:
                         pd.read_excel(temp_name, sheet_name=infor.get('sheet'))
                     except:
-                        return message_retorno(f"Erro 05: planilha inválida sheet '{sheet}' não encontrada")
+                        return Utils.message_retorno(f"Erro 05: planilha inválida sheet '{sheet}' não encontrada")
                         
                     if requests.POST.get('vgv_empreendimento'):
                         if not os.path.exists(os.path.join(path_rpa, 'IC_BASE')):
@@ -78,25 +77,12 @@ def file(requests:WSGIRequest):
                     
                     os.remove(temp_name)
                     
-                    return message_retorno("Concluido: Arquivo Copiado!")
+                    return Utils.message_retorno("Concluido: Arquivo Copiado!")
                 else:
-                    return message_retorno("Erro 04: é aceito apenas arquivos Excel") 
+                    return Utils.message_retorno("Erro 04: é aceito apenas arquivos Excel") 
             else:
-                return message_retorno("Erro 03: Arquivo ausente")
+                return Utils.message_retorno("Erro 03: Arquivo ausente")
         else:
-            return message_retorno(f'Erro 02: pasta do RPA não encontrada "{path_rpa}"')
+            return Utils.message_retorno(f'Erro 02: pasta do RPA não encontrada "{path_rpa}"')
     else:
-        return message_retorno("Erro 01: Tarefa não encontrada")
-
-def message_retorno(text, name_route="baseEstoque_index"):
-    try:
-        route = reverse(name_route)
-        msg = f"""
-        <script>
-        alert('{text.replace("'", "").replace('"', "").replace("\\", "")}');
-        window.location.href='{route}';
-        </script> 
-        """
-        return HttpResponse(msg)
-    except:
-        raise Http404(f"rota '{name_route}' não encontrada")
+        return Utils.message_retorno("Erro 01: Tarefa não encontrada")

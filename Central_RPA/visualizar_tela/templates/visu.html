@@ -38,7 +38,7 @@ async function tarefas(){
         function(item){
             if (item[1].status == "Em execução"){
                 if (item[0].includes("Automações")){
-                    document.getElementById("tabela").innerHTML = `
+                    document.getElementById("tabela").innerHTML += `
                         <td>
                             ${item[0]}
                         </td>
@@ -50,7 +50,7 @@ async function tarefas(){
 }
 
 atualizar_tela()
-setInterval(atualizar_tela, 500)
+<!-- setInterval(atualizar_tela, 1000) -->
 </script>
 
 {% endblock %}
