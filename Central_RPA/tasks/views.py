@@ -46,8 +46,8 @@ def index(request:WSGIRequest,):
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore
 def list_tasks(request:WSGIRequest):
     #new_tasks.atualizar()
-    if not request.user.is_superuser:
-        result = [x for x in new_tasks.lista if x['permission'] in request.user.get_all_permissions()]
+    if not request.user.is_superuser: #type: ignore
+        result = [x for x in new_tasks.lista if x['permission'] in request.user.get_all_permissions()] #type: ignore
     else:
         result = new_tasks.lista 
     result.sort(key=lambda x: x['Nome'])
@@ -58,7 +58,7 @@ def start_newTask(request:WSGIRequest):
     if (name:=request.GET.get("name_newTask")):
         for new_task in new_tasks.tasks:
             if new_task.nome == name:
-                if (new_task.permission in request.user.get_all_permissions() or request.user.is_superuser):
+                if (new_task.permission in request.user.get_all_permissions() or request.user.is_superuser): #type: ignore
                     if (action:=request.GET.get("action")):
                         if action == "start":
                             new_task.start()
@@ -66,7 +66,7 @@ def start_newTask(request:WSGIRequest):
                         elif action == "stop":
                             new_task.stop()
                 break
-    return 
+    return JsonResponse({})
 
 ##############################
 class TarefasValidas:
