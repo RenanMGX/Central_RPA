@@ -7,17 +7,50 @@ Visualizar Tela
 {% block content %}
 <div class="container mt-3">
     <img id="tela" src="data:image/png;base64,{{ tela_print }}" alt="print" width="100%">
+    <br><br>
+    <table class="table">
+        <thead>
+          <tr>
+            <th>Tarefas em Execução no Momento</th>
+          </tr>
+        </thead>
+        <tbody id="tabela">
+
+        </tbody>
+    </table>
 </div>
 <script>
 async function atualizar_tela(){
     response = await fetch("{% url 'visu_atu' %}");
     result = await response.json()
 
-    document.getElementById("tela").src = `data:image/png;base64,${result.tela_print}`
+    document.getElementById("tela").src = `data:image/png;base64,${result.tela_print}`;
+
+    await tarefas();
+}
+
+async function tarefas(){
+    var response = await fetch("{% url 'status' %}");
+    var data = await response.json();
+    
+    document.getElementById("tabela").innerHTML = ""
+    Object.entries(data).forEach(
+        function(item){
+            if (item[1].status == "Em execução"){
+                if (item[0].includes("Automações")){
+                    document.getElementById("tabela").innerHTML = `
+                        <td>
+                            ${item[0]}
+                        </td>
+                    `
+                }
+            }
+        }
+    )
 }
 
 atualizar_tela()
-setInterval(atualizar_tela, 1000)
+setInterval(atualizar_tela, 500)
 </script>
 
 {% endblock %}

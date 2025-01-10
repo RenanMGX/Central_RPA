@@ -90,7 +90,7 @@ def index_old(request:WSGIRequest,):
             if tarefa_valida.permission == permission:
                 tarefas += [tarefa_valida]
 
-    tarefas.sort(key=lambda x: x.nome)
+    tarefas.sort(key=lambda x: x.nome.lower())
    
     content:dict = {
         'tarefas': tarefas,

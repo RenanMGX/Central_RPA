@@ -89,6 +89,8 @@ class Tarefas:
                     if task:
                         task = re.sub(r'[ ]{2,}', ';', task).split(';')
                         if len(task) == 4:
+                            if not "Automações" in caminho:
+                                continue
                             resultado[f"{caminho}\\{task[0]}"] = {"status": task[2], "next_execute": task[1]}
         return resultado
 
