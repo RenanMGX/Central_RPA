@@ -39,6 +39,8 @@ urlpatterns = [
     path('', views.index, name='home_index'),
     #path('alterar_senha', PasswordChangeView.as_view(template_name='alterar_senha.html', success_url=reverse_lazy('home_index')), name='alterar_senha')
     path('alterar_senha', views.AlterarSenha.as_view(), name='alterar_senha'),
+    path('create_user/', views.create_user, name='create_user'),
+    path('create_user/action', views.create_user_action, name='create_user_action'),
     path('visu/', visualizar.visualizar_tela, name='visu'),
     path('visu_atu/', visualizar.atualizar_tela, name='visu_atu'),
     path('processComi/', include('processComi.urls')),

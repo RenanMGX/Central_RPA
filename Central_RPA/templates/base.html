@@ -57,6 +57,7 @@
             <button class="btn btn-warning" onclick="window.location.href='{% url "alterar_senha" %}';">Alterar Senha</button><br><br>
             {% if request.user.is_superuser %}
             <button class="btn btn-danger" onclick="window.location.href='admin/';">Administrador</button><br><br>
+            <button class="btn btn-success" onclick="window.location.href='{% url 'create_user' %}';">Criar Usuario</button><br><br>
             {% endif %}
         </div>
         {% endblock %}
