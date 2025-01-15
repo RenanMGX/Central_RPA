@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'tasks',
     'visualizar_tela',
     'processComi',
-    'baseEstoque'
+    'baseEstoque',
+    'insumosObras'
 ]
 
 MIDDLEWARE = [

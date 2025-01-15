@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Insumos Obras
+{% endblock %}
+{% load static %}
+
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/insumosObras.css' %}>
+<div class="container p-3 my-3 bg-dark text-white"">
+    <div class="atualizar">
+        <h2>Área de Automação para Insumos de Obras</h2>
+        <p>Clique para atualizar a Planilha Base</p>
+        <button class="btn btn-success">Atualizar</button>
+        <h2>Adicione os arquivos que serão tratados para a planilha Base</h2>
+    </div>
+
+    <div class="areaCentral">
+        {% comment %} box1 {% endcomment %}
+        <div class="box">
+            <h3>Patrimar</h3>
+            <form action="{% url 'insumosObras_create' folder='patrimar' %}" method="POST" onsubmit="return enviar()"
+                enctype="multipart/form-data" id="formulario">
+                {% csrf_token %}
+                <input type="file" name="files" id="file_patrimar[]" class="form-control" multiple>
+                <button class="btn btn-success" style="background-color: rgb(38 107 255);">Adicionar</button>
+            </form>
+            <br>
+            <div class="content" id="conteudo_patrimar">
+                <table class="table" id="table_patrimar">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Nome</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista_patrimar">
+                    </tbody>
+                </table>
+            </div>
+            <form action="{% url 'insumosObras_delete' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
+                {% csrf_token %}
+                <input type="hidden" name="del_patrimar" id="del_patrimar">
+                <button class="btn btn-danger" onclick="apagar_listados('patrimar')"
+                    id="bt_delete_patrimar">Deletar</button>
+            </form>
+        </div>
+
+        {% comment %} box 2 {% endcomment %}
+        <div class="box">
+            <h3>Novolar</h3>
+            <form action="{% url 'insumosObras_create' folder='novolar' %}" method="POST"
+                onsubmit="return confirm('Deseja continuar?')" enctype="multipart/form-data" id="formulario">
+                {% csrf_token %}
+                <input type="file" name="files" id="file_novolar[]" class="form-control" multiple>
+                <div> </div>
+                <button class="btn btn-success" onclick="addcampo(1)"
+                    style="background-color: rgb(38 107 255);">Adicionar</button>
+            </form>
+            <br>
+            <div id="conteudo_novolar">
+                <div class="content">
+                    <table class="table" id="table_novolar">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista_novolar">
+                        </tbody>
+                    </table>
+                </div>
+                <form action="{% url 'insumosObras_delete' %}" method="POST"
+                    onsubmit="return confirm('Deseja continuar?')">
+                    {% csrf_token %}
+                    <input type="hidden" name="del_novolar" id="del_novolar">
+                    <button class="btn btn-danger" onclick="apagar_listados('novolar')"
+                        id="bt_delete_novolar">Deletar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    function enviar() {
+        var files = document.getElementById('file_patrimar[]').files
+        if (files.length == 0) {
+            alert("Selecione um arquivo");
+            return false
+        } else {
+            return confirm('Deseja continuar?');
+        }
+    };
+    function montarTabela(nomeTabela, files) {
+        document.getElementById('lista_' + nomeTabela).innerHTML = ''
+        var count = 0;
+        for (var file in files) {
+            document.getElementById('lista_' + nomeTabela).innerHTML += `
+            <tr>
+                <td>
+                    <input type="checkbox" id="linha_${nomeTabela}_${count}" value="${files[file]}">
+                </td>
+                <td>
+                    ${file}
+                </td>
+            </tr>`;
+            count += 1;
+        }
+        if (count == 0) {
+            document.getElementById("bt_delete_" + nomeTabela).style.display = "none"
+            document.getElementById("conteudo_" + nomeTabela).style.display = "none"
+        }
+    }
+    function apagar_listados(nomeTabela) {
+        var count = 0;
+        var result = []
+        while (true) {
+            var file = document.getElementById('linha_' + nomeTabela + '_' + count);
+            if (file == null) {
+                break;
+            }
+            if (file.checked) {
+                result.push(file.value)
+            }
+
+            count += 1;
+
+        }
+        document.getElementById('del_' + nomeTabela).value = result
+    }
+
+    montarTabela("patrimar", {{ patrimarFiles| safe }})
+    montarTabela("novolar", {{ novolarFiles| safe }})
+
+
+</script>
+
+{% endblock %}

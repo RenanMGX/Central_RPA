@@ -1,0 +1,40 @@
+.areaCentral {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    /* border: 1px solid red; */
+}
+
+.areaCentral .box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* border: 1px solid rgb(17, 0, 255); */
+}
+
+.areaCentral .box .content{
+    overflow-wrap: anywhere;
+    border: 2px solid rgb(0, 0, 0);
+}
+
+.areaCentral .box form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#formulario {
+    display: flex;
+    flex-direction: row;
+}
+
+.atualizar {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.atualizar .btn {
+    width: 30%;
+}

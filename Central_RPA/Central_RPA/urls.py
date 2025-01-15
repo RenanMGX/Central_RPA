@@ -44,5 +44,6 @@ urlpatterns = [
     path('visu/', visualizar.visualizar_tela, name='visu'),
     path('visu_atu/', visualizar.atualizar_tela, name='visu_atu'),
     path('processComi/', include('processComi.urls')),
-    path('baseEstoque/', include('baseEstoque.urls'))
+    path('baseEstoque/', include('baseEstoque.urls')),
+    path('insumosObras/', include('insumosObras.urls')),
 ]
