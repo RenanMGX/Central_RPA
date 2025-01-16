@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+class InsumoObraPath(models.Model):
+    path = models.TextField()
+    def __str__(self) -> str:
+        return self.path

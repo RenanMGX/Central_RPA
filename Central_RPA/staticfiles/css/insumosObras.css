@@ -38,3 +38,9 @@
 .atualizar .btn {
     width: 30%;
 }
+
+.adminConfig {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

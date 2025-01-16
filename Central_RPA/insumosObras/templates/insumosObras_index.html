@@ -8,7 +8,18 @@ Insumos Obras
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href={% static 'css/insumosObras.css' %}>
-<div class="container p-3 my-3 bg-dark text-white"">
+<div class="container p-3 my-3 bg-dark text-white">
+    {% if request.user.is_superuser %}
+        <div class="adminConfig">
+            <p>--------------------Administração--------------------</p>
+            <form action="{% url 'insumosObras_alterPath' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
+                {% csrf_token %}
+                <input type="text" name="path" id="path" value="{{ targetPath }}">
+                <button class="btn btn-danger" >Alterar</button>
+            </form>
+            <p>----------------------------------------------------------</p>
+        </div>
+    {% endif %}
     <div class="atualizar">
         <h2>Área de Automação para Insumos de Obras</h2>
         <p>Clique para atualizar a Planilha Base</p>

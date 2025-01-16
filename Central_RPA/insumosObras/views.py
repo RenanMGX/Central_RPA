@@ -2,11 +2,26 @@ from django.shortcuts import render, redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import login_required, permission_required
 import os
+from .models import InsumoObraPath
+from Central_RPA.utils import Utils
 
-raiz_path = os.path.join(os.getcwd(), 'insumosObras/arquivos')
+class TargetPath:
+    sub_path = os.path.normpath('insumosObras/arquivos')
+    @staticmethod   
+    def path():
+        try:
+            base_path = InsumoObraPath.objects.get(pk=1).path
+        except InsumoObraPath.DoesNotExist:
+            base_path = os.getcwd()
+        if not base_path:
+            base_path = os.getcwd()
+        return os.path.normpath(os.path.join(base_path, TargetPath.sub_path))
+
+        
+#raiz_path = os.path.join(os.getcwd(), 'insumosObras/arquivos')
 
 def listar_arquivos(path):
-    path = os.path.join(raiz_path ,path)
+    path = os.path.join(TargetPath.path() ,path)
     if not os.path.exists(path):
         os.makedirs(path)
     result = {}
@@ -19,7 +34,8 @@ def listar_arquivos(path):
 def index(request:WSGIRequest):
     content = {
         'patrimarFiles' : listar_arquivos('patrimar'),
-        'novolarFiles': listar_arquivos('novolar')
+        'novolarFiles': listar_arquivos('novolar'),
+        'targetPath': TargetPath.path().replace(TargetPath.sub_path, '')
     }
     return render(request, 'insumosObras_index.html', content)
 
@@ -46,7 +62,7 @@ def delete(request:WSGIRequest):
 def create(request:WSGIRequest, folder):
     if request.method == 'POST':
         files = request.FILES.getlist('files')
-        upload_path = os.path.join(raiz_path, folder)
+        upload_path = os.path.join(TargetPath.path(), folder)
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
         for file in files:
@@ -54,4 +70,16 @@ def create(request:WSGIRequest, folder):
                 for chunk in file.chunks():
                     destination.write(chunk)
     
+    return redirect('insumosObras_index')
+
+@login_required
+@Utils.superUser_required
+def set_path(request:WSGIRequest):
+    if request.method == 'POST':
+        if(path:=request.POST.get('path')):
+            if not path:
+                path = os.getcwd()
+            if os.path.exists(path):
+                print("alterou para", path)
+                InsumoObraPath.objects.update_or_create(pk=1, defaults={'path':path})
     return redirect('insumosObras_index')
