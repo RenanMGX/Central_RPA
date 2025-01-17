@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Retorno
+{% endblock %}
+
+{% block content %}
+<script>
+    alert('{{ message|escapejs }}');
+    window.location.href='{route}';
+</script> 
+{% endblock %}

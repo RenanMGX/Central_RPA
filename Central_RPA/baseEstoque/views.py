@@ -40,7 +40,7 @@ def file(requests:WSGIRequest):
         
         path_download = f'C:\\Users\\{getuser()}\\Downloads'
         if not os.path.exists(path_download):
-            return Utils.message_retorno(f'Erro 02: a pasta do download não encontrada "{path_download}"')
+            return Utils.message_retorno(requests, f'Erro 02: a pasta do download não encontrada "{path_download}"')
         
         path_rpa:str = infor['vgv'] if infor.get('vgv') else ""
 
@@ -55,14 +55,14 @@ def file(requests:WSGIRequest):
                             _file.write(chunk) 
                     
                     if not infor.get('sheet'):
-                        return Utils.message_retorno("Erro 06: sheet não encontrada")
+                        return Utils.message_retorno(requests, "Erro 06: sheet não encontrada")
                         
                     sheet = infor.get('sheet')
                      
                     try:
                         pd.read_excel(temp_name, sheet_name=infor.get('sheet'))
                     except:
-                        return Utils.message_retorno(f"Erro 05: planilha inválida sheet '{sheet}' não encontrada")
+                        return Utils.message_retorno(requests, f"Erro 05: planilha inválida sheet '{sheet}' não encontrada")
                         
                     if requests.POST.get('vgv_empreendimento'):
                         if not os.path.exists(os.path.join(path_rpa, 'IC_BASE')):
@@ -77,12 +77,12 @@ def file(requests:WSGIRequest):
                     
                     os.remove(temp_name)
                     
-                    return Utils.message_retorno("Concluido: Arquivo Copiado!")
+                    return Utils.message_retorno(requests, "Concluido: Arquivo Copiado!")
                 else:
-                    return Utils.message_retorno("Erro 04: é aceito apenas arquivos Excel") 
+                    return Utils.message_retorno(requests, "Erro 04: é aceito apenas arquivos Excel") 
             else:
-                return Utils.message_retorno("Erro 03: Arquivo ausente")
+                return Utils.message_retorno(requests, "Erro 03: Arquivo ausente")
         else:
-            return Utils.message_retorno(f'Erro 02: pasta do RPA não encontrada "{path_rpa}"')
+            return Utils.message_retorno(requests, f'Erro 02: pasta do RPA não encontrada "{path_rpa}"')
     else:
-        return Utils.message_retorno("Erro 01: Tarefa não encontrada")
+        return Utils.message_retorno(requests, "Erro 01: Tarefa não encontrada")

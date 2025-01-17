@@ -5,7 +5,7 @@ from io import BytesIO
 import base64
 from django.urls import reverse
 from django.http import HttpResponse, Http404
-from django.urls import reverse
+from django.shortcuts import render
 
 
 class Utils:
@@ -29,16 +29,14 @@ class Utils:
         return img_byte
     
     @staticmethod
-    def message_retorno(text:str, name_route="baseEstoque_index"):
+    def message_retorno(request, text:str, name_route="baseEstoque_index"):
         try:
             route = reverse(name_route)
-            msg = f"""
-            <script>
-            alert('{text.replace("'", "").replace('"', "").replace("\\", "")}');
-            window.location.href='{route}';
-            </script> 
-            """
-            return HttpResponse(msg)
+            content = {
+                'message': text,
+                'route': route
+            }
+            return render(request, 'retorno.html', content)
         except:
             raise Http404(f"rota '{name_route}' não encontrada")
     

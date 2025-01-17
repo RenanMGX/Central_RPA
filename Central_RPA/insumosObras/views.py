@@ -4,6 +4,11 @@ from django.contrib.auth.decorators import login_required, permission_required
 import os
 from .models import InsumoObraPath
 from Central_RPA.utils import Utils
+from typing import List
+import openpyxl
+
+valid_sheet = "Base de Dados"
+valids_columns =["Texto do pedido", "Elemento PEP", "Data de lançamento"]
 
 class TargetPath:
     sub_path = os.path.normpath('insumosObras/arquivos')
@@ -65,12 +70,43 @@ def create(request:WSGIRequest, folder):
         upload_path = os.path.join(TargetPath.path(), folder)
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
+        
+        errors = []
         for file in files:
-            with open(os.path.join(upload_path, file.name), 'wb+') as destination:
-                for chunk in file.chunks():
-                    destination.write(chunk)
-    
+            if file.name.endswith(('xls', 'xlsx', 'xlsm')):
+                file_path = os.path.join(upload_path, file.name)
+                with open(file_path, 'wb+') as destination:
+                    for chunk in file.chunks():
+                        destination.write(chunk)
+                try:
+                    wb = openpyxl.load_workbook(file_path)
+                    if not valid_sheet in wb.sheetnames:
+                        errors.append(f"a planilha {file.name} não possui a aba 'Base de Dados'")
+                        wb.close()
+                        os.unlink(file_path)
+                        continue
+                    else:
+                        columns = [cell.value for cell in wb[valid_sheet][1]]
+                        if not all(item in columns for item in valids_columns):
+                            errors.append(f"a planilha {file.name} não possui todas as colunas necessárias {valids_columns}")
+                            wb.close()
+                            os.unlink(file_path)
+                            continue
+                    wb.close()
+                except Exception as err:
+                    errors.append(f"Erro ao abrir a planilha {file.name}: {err}")
+                    os.unlink(file_path)
+            else:
+                errors.append(f"a planilha {file.name} não é um arquivo excel")
+        
+        print("aqui")
+        if errors:
+            return Utils.message_retorno(request, text=f"Erro ao enviar arquivos\n{'\n'.join(errors)}", name_route='insumosObras_index')
+        else:
+            return Utils.message_retorno(request, text=f"Envio Concluido sem nenhum error!", name_route='insumosObras_index')
+        
     return redirect('insumosObras_index')
+    
 
 @login_required
 @Utils.superUser_required
@@ -82,4 +118,5 @@ def set_path(request:WSGIRequest):
             if os.path.exists(path):
                 print("alterou para", path)
                 InsumoObraPath.objects.update_or_create(pk=1, defaults={'path':path})
+                return Utils.message_retorno(request, text="Alteração Concluida", name_route='insumosObras_index')
     return redirect('insumosObras_index')
