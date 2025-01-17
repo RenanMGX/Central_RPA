@@ -7,6 +7,6 @@ Retorno
 {% block content %}
 <script>
     alert('{{ message|escapejs }}');
-    window.location.href='{route}';
+    window.location.href='{{route|escapejs}}';
 </script> 
 {% endblock %}

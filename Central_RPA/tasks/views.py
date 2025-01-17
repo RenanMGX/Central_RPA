@@ -34,12 +34,12 @@ class ValidNewTasks:
     def atualizar(self):
         self.__lista = NewTasks.listar_tarefas(['Automações'])
         
-new_tasks = ValidNewTasks()
+new_tasks = "ValidNewTasks()"
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
 def index(request:WSGIRequest,):
-    new_tasks.atualizar()    
+    new_tasks.atualizar()  #type: ignore  
     return render(request, 'new_tasks.html')
 
 @login_required()
@@ -49,14 +49,14 @@ def list_tasks(request:WSGIRequest):
     if not request.user.is_superuser: #type: ignore
         result = [x for x in new_tasks.lista if x['permission'] in request.user.get_all_permissions()] #type: ignore
     else:
-        result = new_tasks.lista 
+        result = new_tasks.lista  #type: ignore  
     result.sort(key=lambda x: x['Nome'])
     return JsonResponse(result, safe=False)
 
 @login_required()
 def start_newTask(request:WSGIRequest):
     if (name:=request.GET.get("name_newTask")):
-        for new_task in new_tasks.tasks:
+        for new_task in new_tasks.tasks: #type: ignore  
             if new_task.nome == name:
                 if (new_task.permission in request.user.get_all_permissions() or request.user.is_superuser): #type: ignore
                     if (action:=request.GET.get("action")):

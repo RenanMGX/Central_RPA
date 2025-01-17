@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import login_required, permission_required
+from django.http import JsonResponse
 import os
 from .models import InsumoObraPath
 from Central_RPA.utils import Utils
 from typing import List
 import openpyxl
+from tasks.Entities.new_tasks import NewTasks
+
+task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
 
 valid_sheet = "Base de Dados"
 valids_columns =["Texto do pedido", "Elemento PEP", "Data de lançamento"]
@@ -21,9 +25,6 @@ class TargetPath:
         if not base_path:
             base_path = os.getcwd()
         return os.path.normpath(os.path.join(base_path, TargetPath.sub_path))
-
-        
-#raiz_path = os.path.join(os.getcwd(), 'insumosObras/arquivos')
 
 def listar_arquivos(path):
     path = os.path.join(TargetPath.path() ,path)
@@ -120,3 +121,18 @@ def set_path(request:WSGIRequest):
                 InsumoObraPath.objects.update_or_create(pk=1, defaults={'path':path})
                 return Utils.message_retorno(request, text="Alteração Concluida", name_route='insumosObras_index')
     return redirect('insumosObras_index')
+
+@login_required
+@permission_required('tasks.insumosObras', raise_exception=True)
+def status(request:WSGIRequest):
+    return JsonResponse({'status': task.status})
+
+
+@login_required
+@permission_required('tasks.insumosObras', raise_exception=True)
+def start(request:WSGIRequest):
+    print(request.method)
+    if request.method == 'GET':
+        task.start()
+
+    return JsonResponse({})

@@ -23,7 +23,10 @@ Insumos Obras
     <div class="atualizar">
         <h2>Área de Automação para Insumos de Obras</h2>
         <p>Clique para atualizar a Planilha Base</p>
-        <button class="btn btn-success">Atualizar</button>
+
+        <div id="bt_atualizar" style="width:100%;display:flex;justify-content: center"></div>
+        {% comment %} <button  class="btn btn-success" onclick="atualizar()" >Atualizar</button> {% endcomment %}
+
         <h3><a target="_blank" href="https://patrimar.sharepoint.com/:x:/r/sites/RPA/_layouts/15/Doc.aspx?sourcedoc=%7B5F90D402-3571-4651-8085-BEC5337ED232%7D&file=Materiais%20Aplicados%20-%20Convers%C3%A3o.xlsx&action=default&mobileredirect=true"><strong>Planina de Conversão</strong></a></h3>
         <h3><a target="_blank" href="https://patrimar.sharepoint.com/:x:/r/sites/RPA/_layouts/15/Doc.aspx?sourcedoc=%7B95F3D387-8734-471A-8B21-0D7A9505418F%7D&file=Relatorio_Final.xlsx&action=default&mobileredirect=true"><strong>Planina Final</strong></a></h3>
         <h2>Adicione os arquivos que serão tratados para a planilha Base</h2>
@@ -34,7 +37,7 @@ Insumos Obras
         <div class="box">
             <h3>Patrimar</h3>
             <form action="{% url 'insumosObras_create' folder='patrimar' %}" method="POST" onsubmit="return enviar()"
-                enctype="multipart/form-data" id="formulario">
+                enctype="multipart/form-data" id="formulario_pat">
                 {% csrf_token %}
                 <input type="file" name="files" id="file_patrimar[]" class="form-control" multiple>
                 <button class="btn btn-success" style="background-color: rgb(38 107 255);">Adicionar</button>
@@ -52,7 +55,7 @@ Insumos Obras
                     </tbody>
                 </table>
             </div>
-            <form action="{% url 'insumosObras_delete' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
+            <form action="{% url 'insumosObras_delete' %}" method="POST" onsubmit="return confirm('Deseja continuar?')"  id="del_form_patrimar">
                 {% csrf_token %}
                 <input type="hidden" name="del_patrimar" id="del_patrimar">
                 <button class="btn btn-danger" onclick="apagar_listados('patrimar')"
@@ -64,7 +67,7 @@ Insumos Obras
         <div class="box">
             <h3>Novolar</h3>
             <form action="{% url 'insumosObras_create' folder='novolar' %}" method="POST"
-                onsubmit="return confirm('Deseja continuar?')" enctype="multipart/form-data" id="formulario">
+                onsubmit="return confirm('Deseja continuar?')" enctype="multipart/form-data" id="formulario_nov">
                 {% csrf_token %}
                 <input type="file" name="files" id="file_novolar[]" class="form-control" multiple>
                 <div> </div>
@@ -86,7 +89,7 @@ Insumos Obras
                     </table>
                 </div>
                 <form action="{% url 'insumosObras_delete' %}" method="POST"
-                    onsubmit="return confirm('Deseja continuar?')">
+                    onsubmit="return confirm('Deseja continuar?')" id="del_form_novolar">
                     {% csrf_token %}
                     <input type="hidden" name="del_novolar" id="del_novolar">
                     <button class="btn btn-danger" onclick="apagar_listados('novolar')"
@@ -145,9 +148,49 @@ Insumos Obras
         document.getElementById('del_' + nomeTabela).value = result
     }
 
+    async function atualizar(){
+        await fetch("{% url 'insumosObras_start' %}")
+    }
+
+    async function status(){
+        var response = await fetch("{% url 'insumosObras_status' %}")
+        var data = await response.json()
+
+        var classe = ''
+        var onclick = 's'
+        var text = ''
+        var bt_status = ''
+
+        if (data.status == "Pronto"){
+            classe = 'btn btn-success'
+            onclick = 'atualizar()'
+            text = 'Atualizar'
+            document.getElementById('formulario_pat').style.display = 'flex'
+            document.getElementById('formulario_nov').style.display = 'flex'
+            document.getElementById('del_form_novolar').style.display = 'flex'
+            document.getElementById('del_form_patrimar').style.display = 'flex'
+        }else {
+            classe = 'btn btn-danger'
+            text = 'Executando'
+            bt_status = 'disabled'
+            if (data.status == null){
+                text = 'Desativado'
+                bt_status = 'style="background:black;" disabled'
+            }
+            document.getElementById('formulario_pat').style.display = 'none'
+            document.getElementById('formulario_nov').style.display = 'none'
+            document.getElementById('del_form_novolar').style.display = 'none'
+            document.getElementById('del_form_patrimar').style.display = 'none'
+        }
+
+        document.getElementById('bt_atualizar').innerHTML = `<button  class='${classe}' onclick='${onclick}' ${bt_status}>${text}</button>`
+    }
+
     montarTabela("patrimar", {{ patrimarFiles| safe }})
     montarTabela("novolar", {{ novolarFiles| safe }})
 
+    status()
+    setInterval(status, 1000)
 
 </script>
 

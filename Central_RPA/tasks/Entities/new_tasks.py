@@ -32,10 +32,10 @@ class NewTasks:
     def listar_tarefas(pastas:List[str]=[]):
         tasks_groups = NewTasks.get_tasks(pastas)
         
-        
         tasks:List[NewTasks] = []
         for key, value in tasks_groups.items():
             for group in value:
+                print(f"{group=}; {key=}")
                 tasks.append(NewTasks(group, pasta=key))
         
         
