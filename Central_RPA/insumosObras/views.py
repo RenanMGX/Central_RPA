@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, Http404
 import os
 from .models import InsumoObraPath
 from Central_RPA.utils import Utils
@@ -9,10 +9,10 @@ from typing import List
 import openpyxl
 from tasks.Entities.new_tasks import NewTasks
 
-task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
+#task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
+task = NewTasks(value=r"Nome da tarefa: Automações\testes", pasta=r".Automações")
 
-valid_sheet = "Base de Dados"
-valids_columns =["Texto do pedido", "Elemento PEP", "Data de lançamento"]
+
 
 class TargetPath:
     sub_path = os.path.normpath('insumosObras/arquivos')
@@ -38,9 +38,12 @@ def listar_arquivos(path):
 @login_required
 @permission_required('tasks.insumosObras', raise_exception=True)
 def index(request:WSGIRequest):
+
     content = {
         'patrimarFiles' : listar_arquivos('patrimar'),
         'novolarFiles': listar_arquivos('novolar'),
+        'convert': listar_arquivos('convert'),
+        'finalPath': listar_arquivos('final'),
         'targetPath': TargetPath.path().replace(TargetPath.sub_path, '')
     }
     return render(request, 'insumosObras_index.html', content)
@@ -71,6 +74,14 @@ def create(request:WSGIRequest, folder):
         upload_path = os.path.join(TargetPath.path(), folder)
         if not os.path.exists(upload_path):
             os.makedirs(upload_path)
+        
+        mod = request.POST.get('mod')
+        
+        valid_sheet = "Base de Dados" if mod == "add" else "CONVERSÃO MATERIAIS APLIC." if mod == "convert" else "None"
+        valids_columns =["Texto do pedido", "Elemento PEP", "Data de lançamento"] if mod == "add" else ["TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"] if mod == "convert" else ["None"]
+
+        for temp_file in os.listdir(upload_path):
+            os.unlink(os.path.join(upload_path, temp_file))
         
         errors = []
         for file in files:
@@ -136,3 +147,17 @@ def start(request:WSGIRequest):
         task.start()
 
     return JsonResponse({})
+
+@login_required()
+@permission_required('tasks.insumosObras', raise_exception=True)
+def download_file(request: WSGIRequest):
+    if request.method == "GET":
+        file_path = request.GET.get('path')
+        if file_path:
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/octet-stream")
+                    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                    return response
+            raise Http404
+    return redirect('insumosObras_index')

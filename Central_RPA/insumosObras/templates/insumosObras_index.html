@@ -10,39 +10,64 @@ Insumos Obras
 <link rel="stylesheet" type="text/css" href={% static 'css/insumosObras.css' %}>
 <div class="container p-3 my-3 bg-dark text-white">
     {% if request.user.is_superuser %}
-        <div class="adminConfig">
-            <p>--------------------Administração--------------------</p>
-            <form action="{% url 'insumosObras_alterPath' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
-                {% csrf_token %}
-                <input type="text" name="path" id="path" value="{{ targetPath }}">
-                <button class="btn btn-danger" >Alterar</button>
-            </form>
-            <p>----------------------------------------------------------</p>
-        </div>
+    <div class="adminConfig">
+        <p>--------------------Administração--------------------</p>
+        <form action="{% url 'insumosObras_alterPath' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
+            {% csrf_token %}
+            <input type="text" name="path" id="path" value="{{ targetPath }}">
+            <button class="btn btn-danger">Alterar</button>
+        </form>
+        <p>----------------------------------------------------------</p>
+    </div>
     {% endif %}
     <div class="atualizar">
         <h2>Área de Automação para Insumos de Obras</h2>
         <p>Clique para atualizar a Planilha Base</p>
 
+        {% for key, value in finalPath.items %}
+            <h3 id="fileFinal_download"><a target="_blank"
+                    href="{% url 'processComi_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
+        {% endfor %}
         <div id="bt_atualizar" style="width:100%;display:flex;justify-content: center"></div>
-        {% comment %} <button  class="btn btn-success" onclick="atualizar()" >Atualizar</button> {% endcomment %}
+        {% comment %} <button class="btn btn-success" onclick="atualizar()">Atualizar</button> {% endcomment %}
 
-        <h3><a target="_blank" href="https://patrimar.sharepoint.com/:x:/r/sites/RPA/_layouts/15/Doc.aspx?sourcedoc=%7B5F90D402-3571-4651-8085-BEC5337ED232%7D&file=Materiais%20Aplicados%20-%20Convers%C3%A3o.xlsx&action=default&mobileredirect=true"><strong>Planina de Conversão</strong></a></h3>
-        <h3><a target="_blank" href="https://patrimar.sharepoint.com/:x:/r/sites/RPA/_layouts/15/Doc.aspx?sourcedoc=%7B95F3D387-8734-471A-8B21-0D7A9505418F%7D&file=Relatorio_Final.xlsx&action=default&mobileredirect=true"><strong>Planina Final</strong></a></h3>
+
+        <br><br><br>
+        <div class="form_convert">
+            <p>1. O arquivo deve ser um 'xls', 'xlsx', 'xlsm'</p>
+            <p>2. O arquivo deve conter as colunas: "TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"</p>
+            <p>3. O arquivo deve conter a aba "CONVERSÃO MATERIAIS APLIC."</p>
+            {% for key, value in convert.items %}
+            <h3><a target="_blank"
+                    href="{% url 'processComi_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
+            {% endfor %}
+            <form action="{% url 'insumosObras_create' folder='convert' %}" method="POST" onsubmit="return enviar('file_conver')"
+                enctype="multipart/form-data" id="formulario_conver">
+                {% csrf_token %}
+                <input type="hidden" name="mod" value="convert">
+                <input type="file" name="files" id="file_conver" class="form-control">
+                <button class="btn btn-success" style="background-color: rgb(38 107 255);">Adicionar</button>
+            </form>
+        </div>
+
         <h2>Adicione os arquivos que serão tratados para a planilha Base</h2>
+        <p>1. O arquivo deve ser um 'xls', 'xlsx', 'xlsm'</p>
+        <p>2. O arquivo deve conter as colunas: "Texto do pedido", "Elemento PEP", "Data de lançamento"</p>
+        <p>3. O arquivo deve conter a aba "Base de Dados"</p>
     </div>
 
     <div class="areaCentral">
         {% comment %} box1 {% endcomment %}
         <div class="box">
             <h3>Patrimar</h3>
-            <form action="{% url 'insumosObras_create' folder='patrimar' %}" method="POST" onsubmit="return enviar()"
-                enctype="multipart/form-data" id="formulario_pat">
-                {% csrf_token %}
-                <input type="file" name="files" id="file_patrimar[]" class="form-control" multiple>
-                <button class="btn btn-success" style="background-color: rgb(38 107 255);">Adicionar</button>
-            </form>
-            <br>
+            <form action="{% url 'insumosObras_create' folder='patrimar' %}" method="POST" onsubmit="return enviar('file_patrimar[]')"
+            enctype="multipart/form-data" id="formulario_pat">
+            {% csrf_token %}
+            <input type="hidden" name="mod" value="add">
+            <input type="file" name="files" id="file_patrimar[]" class="form-control" multiple>
+            <button class="btn btn-success" style="background-color: rgb(38 107 255);">Adicionar</button>
+        </form>
+        <br>
             <div class="content" id="conteudo_patrimar">
                 <table class="table" id="table_patrimar">
                     <thead>
@@ -55,7 +80,8 @@ Insumos Obras
                     </tbody>
                 </table>
             </div>
-            <form action="{% url 'insumosObras_delete' %}" method="POST" onsubmit="return confirm('Deseja continuar?')"  id="del_form_patrimar">
+            <form action="{% url 'insumosObras_delete' %}" method="POST" onsubmit="return confirm('Deseja continuar?')"
+                id="del_form_patrimar">
                 {% csrf_token %}
                 <input type="hidden" name="del_patrimar" id="del_patrimar">
                 <button class="btn btn-danger" onclick="apagar_listados('patrimar')"
@@ -67,8 +93,9 @@ Insumos Obras
         <div class="box">
             <h3>Novolar</h3>
             <form action="{% url 'insumosObras_create' folder='novolar' %}" method="POST"
-                onsubmit="return confirm('Deseja continuar?')" enctype="multipart/form-data" id="formulario_nov">
+                onsubmit="return enviar('file_novolar[]')" enctype="multipart/form-data" id="formulario_nov">
                 {% csrf_token %}
+                <input type="hidden" name="mod" value="add">
                 <input type="file" name="files" id="file_novolar[]" class="form-control" multiple>
                 <div> </div>
                 <button class="btn btn-success" onclick="addcampo(1)"
@@ -101,8 +128,8 @@ Insumos Obras
 
 </div>
 <script>
-    function enviar() {
-        var files = document.getElementById('file_patrimar[]').files
+    function enviar(form) {
+        var files = document.getElementById(form).files
         if (files.length == 0) {
             alert("Selecione um arquivo");
             return false
@@ -120,7 +147,7 @@ Insumos Obras
                     <input type="checkbox" id="linha_${nomeTabela}_${count}" value="${files[file]}">
                 </td>
                 <td>
-                    ${file}
+                    <a href="{% url 'processComi_download' %}?path=${files[file]}">${file}</a>
                 </td>
             </tr>`;
             count += 1;
@@ -148,11 +175,11 @@ Insumos Obras
         document.getElementById('del_' + nomeTabela).value = result
     }
 
-    async function atualizar(){
+    async function atualizar() {
         await fetch("{% url 'insumosObras_start' %}")
     }
 
-    async function status(){
+    async function status() {
         var response = await fetch("{% url 'insumosObras_status' %}")
         var data = await response.json()
 
@@ -161,19 +188,21 @@ Insumos Obras
         var text = ''
         var bt_status = ''
 
-        if (data.status == "Pronto"){
+        if (data.status == "Pronto") {
             classe = 'btn btn-success'
             onclick = 'atualizar()'
             text = 'Atualizar'
-            document.getElementById('formulario_pat').style.display = 'flex'
-            document.getElementById('formulario_nov').style.display = 'flex'
+            document.getElementById('formulario_pat').style = 'display: flex;flex-direction: row;'
+            document.getElementById('formulario_nov').style = 'display: flex;flex-direction: row;'
             document.getElementById('del_form_novolar').style.display = 'flex'
             document.getElementById('del_form_patrimar').style.display = 'flex'
-        }else {
+            document.getElementById('formulario_conver').style.display = 'flex'
+            document.getElementById('fileFinal_download').style.display = 'flex'
+        } else {
             classe = 'btn btn-danger'
             text = 'Executando'
             bt_status = 'disabled'
-            if (data.status == null){
+            if (data.status == null) {
                 text = 'Desativado'
                 bt_status = 'style="background:black;" disabled'
             }
@@ -181,6 +210,8 @@ Insumos Obras
             document.getElementById('formulario_nov').style.display = 'none'
             document.getElementById('del_form_novolar').style.display = 'none'
             document.getElementById('del_form_patrimar').style.display = 'none'
+            document.getElementById('formulario_conver').style.display = 'none'
+            document.getElementById('fileFinal_download').style.display = 'none'
         }
 
         document.getElementById('bt_atualizar').innerHTML = `<button  class='${classe}' onclick='${onclick}' ${bt_status}>${text}</button>`
