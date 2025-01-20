@@ -38,7 +38,6 @@ def listar_arquivos(path):
 @login_required
 @permission_required('tasks.insumosObras', raise_exception=True)
 def index(request:WSGIRequest):
-
     content = {
         'patrimarFiles' : listar_arquivos('patrimar'),
         'novolarFiles': listar_arquivos('novolar'),

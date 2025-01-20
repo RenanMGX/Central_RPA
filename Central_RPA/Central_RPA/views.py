@@ -49,7 +49,7 @@ def create_user_action(request:WSGIRequest):
             password = datetime.now().strftime('patrimar#%Y')
             
             if User.objects.filter(email=email).exists():
-                return Utils.message_retorno("Erro 01: Usuário já existe", name_route='create_user')
+                return Utils.message_retorno(request, "Erro 01: Usuário já existe", name_route='create_user')
             
             if User.objects.filter(username=user_name).exists():
                 last_char = user_name[-1]
@@ -70,7 +70,7 @@ def create_user_action(request:WSGIRequest):
                 
                 user.save()
             except Exception as err:
-                Utils.message_retorno(f"Error2: {str(err)}", name_route='create_user')
+                Utils.message_retorno(request, f"Error2: {str(err)}", name_route='create_user')
                 
             try:
                 crd:dict = Credential("Microsoft-RPA").load()
@@ -91,8 +91,8 @@ Favor não responder a este email.
 Atenciosamente,
 """).send()
             except Exception as err:
-                Utils.message_retorno(f"Error3: {str(err)}", name_route='create_user')
-    return Utils.message_retorno("Usuário criado com sucesso", name_route='create_user')
+                Utils.message_retorno(request, f"Error3: {str(err)}", name_route='create_user')
+    return Utils.message_retorno(request, "Usuário criado com sucesso", name_route='create_user')
 
 
 class AlterarSenha(PasswordChangeView):

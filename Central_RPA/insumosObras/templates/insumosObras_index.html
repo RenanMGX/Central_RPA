@@ -24,10 +24,12 @@ Insumos Obras
         <h2>Área de Automação para Insumos de Obras</h2>
         <p>Clique para atualizar a Planilha Base</p>
 
-        {% for key, value in finalPath.items %}
-            <h3 id="fileFinal_download"><a target="_blank"
-                    href="{% url 'processComi_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
-        {% endfor %}
+        <div id="fileFinal_download">
+            {% for key, value in finalPath.items %}
+                <h3><a target="_blank"
+                        href="{% url 'processComi_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
+            {% endfor %}
+        </div>
         <div id="bt_atualizar" style="width:100%;display:flex;justify-content: center"></div>
         {% comment %} <button class="btn btn-success" onclick="atualizar()">Atualizar</button> {% endcomment %}
 
