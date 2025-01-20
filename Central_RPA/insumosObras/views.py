@@ -9,8 +9,8 @@ from typing import List
 import openpyxl
 from tasks.Entities.new_tasks import NewTasks
 
-#task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
-task = NewTasks(value=r"Nome da tarefa: Automações\testes", pasta=r".Automações")
+task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
+#task = NewTasks(value=r"Nome da tarefa: Automações\testes", pasta=r".Automações")
 
 
 
