@@ -9,8 +9,8 @@ from typing import List
 import openpyxl
 from tasks.Entities.new_tasks import NewTasks
 
-task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
-#task = NewTasks(value=r"Nome da tarefa: Automações\testes", pasta=r".Automações")
+#task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
+task = NewTasks(value=r"Nome da tarefa: Automações\testes", pasta=r".Automações")
 
 
 
@@ -79,8 +79,9 @@ def create(request:WSGIRequest, folder):
         valid_sheet = "Base de Dados" if mod == "add" else "CONVERSÃO MATERIAIS APLIC." if mod == "convert" else "None"
         valids_columns =["Texto do pedido", "Elemento PEP", "Data de lançamento"] if mod == "add" else ["TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"] if mod == "convert" else ["None"]
 
-        for temp_file in os.listdir(upload_path):
-            os.unlink(os.path.join(upload_path, temp_file))
+        if mod == "convert":
+            for temp_file in os.listdir(upload_path):
+                os.unlink(os.path.join(upload_path, temp_file))
         
         errors = []
         for file in files:

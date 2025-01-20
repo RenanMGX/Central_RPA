@@ -8,5 +8,5 @@ urlpatterns = [
     path('alterPath', views.set_path, name='insumosObras_alterPath'),
     path('status', views.status, name='insumosObras_status'),
     path('start', views.start, name='insumosObras_start'),
-    path('download/<str:path>', views.download_file, name='insumosObras_download'),
+    path('download', views.download_file, name='insumosObras_download'),
 ]

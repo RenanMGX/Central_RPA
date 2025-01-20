@@ -27,7 +27,7 @@ Insumos Obras
         <div id="fileFinal_download">
             {% for key, value in finalPath.items %}
                 <h3><a target="_blank"
-                        href="{% url 'processComi_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
+                        href="{% url 'insumosObras_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
             {% endfor %}
         </div>
         <div id="bt_atualizar" style="width:100%;display:flex;justify-content: center"></div>
@@ -41,7 +41,7 @@ Insumos Obras
             <p>3. O arquivo deve conter a aba "CONVERSÃO MATERIAIS APLIC."</p>
             {% for key, value in convert.items %}
             <h3><a target="_blank"
-                    href="{% url 'processComi_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
+                    href="{% url 'insumosObras_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
             {% endfor %}
             <form action="{% url 'insumosObras_create' folder='convert' %}" method="POST" onsubmit="return enviar('file_conver')"
                 enctype="multipart/form-data" id="formulario_conver">
@@ -149,7 +149,7 @@ Insumos Obras
                     <input type="checkbox" id="linha_${nomeTabela}_${count}" value="${files[file]}">
                 </td>
                 <td>
-                    <a href="{% url 'processComi_download' %}?path=${files[file]}">${file}</a>
+                    <a href="{% url 'insumosObras_download' %}?path=${files[file]}">${file}</a>
                 </td>
             </tr>`;
             count += 1;
@@ -199,7 +199,7 @@ Insumos Obras
             document.getElementById('del_form_novolar').style.display = 'flex'
             document.getElementById('del_form_patrimar').style.display = 'flex'
             document.getElementById('formulario_conver').style.display = 'flex'
-            document.getElementById('fileFinal_download').style.display = 'flex'
+            {% comment %} document.getElementById('fileFinal_download').style.display = 'flex' {% endcomment %}
         } else {
             classe = 'btn btn-danger'
             text = 'Executando'
@@ -213,7 +213,7 @@ Insumos Obras
             document.getElementById('del_form_novolar').style.display = 'none'
             document.getElementById('del_form_patrimar').style.display = 'none'
             document.getElementById('formulario_conver').style.display = 'none'
-            document.getElementById('fileFinal_download').style.display = 'none'
+            {% comment %} document.getElementById('fileFinal_download').style.display = 'none' {% endcomment %}
         }
 
         document.getElementById('bt_atualizar').innerHTML = `<button  class='${classe}' onclick='${onclick}' ${bt_status}>${text}</button>`
