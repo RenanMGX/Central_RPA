@@ -46,4 +46,5 @@ urlpatterns = [
     path('processComi/', include('processComi.urls')),
     path('baseEstoque/', include('baseEstoque.urls')),
     path('insumosObras/', include('insumosObras.urls')),
+    path('letrasRotinas/', include('letrasRotinas.urls')),
 ]
