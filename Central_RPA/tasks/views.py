@@ -286,7 +286,7 @@ def pagamentos_diarios_iniciar(request: WSGIRequest):
             django_argv['relacionais'] = False
 
         if (empresas:=post.get('empresas')):
-            empresas = [x for x in json.loads(empresas) if x]
+            empresas = [str(x).upper() for x in json.loads(empresas) if x]
             django_argv['empresas'] = empresas
             
             

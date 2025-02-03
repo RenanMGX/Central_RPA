@@ -197,8 +197,19 @@ tasks
         document.getElementById('textos').innerHTML = ""
         resultado_text.reverse();
         resultado_text.forEach(item => {
+          var color = item
+          if (item.includes('<django:red>')) {
+            document.getElementById('textos').innerHTML += `<tr><td> <font color="red">${item}</font> </td></tr>`
+          }else if (item.includes('<django:yellow>')) {
+            document.getElementById('textos').innerHTML += `<tr><td> <font color="yellow">${item}</font> </td></tr>`
+          }else if (item.includes('<django:green>')) {
+            document.getElementById('textos').innerHTML += `<tr><td> <font color="green">${item}</font> </td></tr>`
+          }else if (item.includes('<django:blue>')) {
+            document.getElementById('textos').innerHTML += `<tr><td> <font color="blue">${item}</font> </td></tr>`
+          }
+          else{
           document.getElementById('textos').innerHTML += "<tr><td>" + item + "</td></tr>"
-  
+          }
         })
 
       }
