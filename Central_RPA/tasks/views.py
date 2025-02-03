@@ -247,7 +247,9 @@ def retorno_informativo(request: WSGIRequest, path):
 def pagamentos_diarios_iniciar(request: WSGIRequest):
     if request.method == "POST":
         post = request.POST
-        #print(post)
+        
+        
+        #
         
         path_informativo = str(post.get('path_informativo'))
         if post.get(path_informativo):
@@ -283,12 +285,16 @@ def pagamentos_diarios_iniciar(request: WSGIRequest):
         else:
             django_argv['relacionais'] = False
 
+        if (empresas:=post.get('empresas')):
+            empresas = [x for x in json.loads(empresas) if x]
+            django_argv['empresas'] = empresas
+            
+            
         path = str(post.get('path'))
         if os.path.exists(os.path.dirname(path)):
             with open(path, 'w', encoding='utf-8')as _file:
                 json.dump(django_argv, _file)
             
-                
             tarefas:List[Tarefas] = []
             #permission_user = [x.codename for x in request.user.user_permissions.all()]#type: ignore  
             for permission in request.user.get_all_permissions(): #type: ignore
