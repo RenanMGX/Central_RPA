@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'processComi',
     'baseEstoque',
     'insumosObras',
-    'letrasRotinas'    
+    'letrasRotinas',
+    'consolidar_dados_multiplas_planilhas'   
 ]
 
 MIDDLEWARE = [

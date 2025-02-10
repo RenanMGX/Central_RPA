@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}
+tasks
+{% endblock %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/consolidarDadosMultiplasPlanilhas.css' %}>
+
+<div class="container">
+    <div class="box">
+        {% if request.user.is_superuser %}
+            <p>----------------------Admin----------------------</p>
+            <p>caminho da pasta do RPA</p>
+            <form action="{% url 'setUploadPath_consolidarDadosMultiplasPlanilhas' %}" method="POST">
+                {% csrf_token %}
+                <input type="text" name="path" class="form-control" value="{{ upload_path }}">
+                <input type="submit" value="Alterar" class="btn btn-primary">
+            </form>
+            <p>-----------------------------------------------------</p>
+        {% endif %}
+
+        <h2>Consolidar Dados Multiplas Planilhas</h2>
+        <p>Este serviço automatiza a consolidação de dados de múltiplas planilhas, garantindo precisão e eficiência na análise de informações.</p>
+
+        <form action="{% url 'upLoad_consolidarDadosMultiplasPlanilhas' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="files" id="file_novolar[]" class="form-control" multiple>
+            <input type="submit" value="Enviar" class="btn btn-primary">
+
+        </form>
+        <br>
+        <p>Logs</p>
+        <p id="logs"></p>
+        {% comment %} {% for infor in informativo %}
+            {{ infor }}<br>
+        {% endfor %} {% endcomment %}
+    </div>
+</div>
+
+<script>
+    async function updateLogs() {
+        let response = await fetch("{% url 'informativo_consolidarDadosMultiplasPlanilhas' %}")
+        if (response.ok){
+            dados = await response.json()
+            if (dados.length > 0){
+                document.getElementById("logs").innerHTML = dados.join("<br>")
+            }
+        }
+        
+    }
+    updateLogs();
+    setInterval(updateLogs, 1000);
+
+</script>
+
+{% endblock %}

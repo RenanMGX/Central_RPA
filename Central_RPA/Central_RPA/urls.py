@@ -47,4 +47,5 @@ urlpatterns = [
     path('baseEstoque/', include('baseEstoque.urls')),
     path('insumosObras/', include('insumosObras.urls')),
     path('letrasRotinas/', include('letrasRotinas.urls')),
+    path('consolidarDadosMultiplasPlanilhas/', include('consolidar_dados_multiplas_planilhas.urls')),
 ]
