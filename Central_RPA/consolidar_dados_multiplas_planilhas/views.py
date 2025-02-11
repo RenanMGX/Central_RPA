@@ -31,7 +31,7 @@ def testar_automacao(request: WSGIRequest):
     
     return redirect('index_consolidarDadosMultiplasPlanilhas')
 
-@login_required
+@login_required         
 @permission_required('tasks.consolidarDadosMultiplasPlanilhas', raise_exception=True)
 def index(request: WSGIRequest):
     #start_task(request=request, nome_para_key=r'Automações\\testes')

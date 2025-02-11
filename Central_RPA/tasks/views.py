@@ -108,6 +108,7 @@ def status(request: WSGIRequest):
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
+@permission_required('tasks.consolidarDadosMultiplasPlanilhas', raise_exception=True)
 def start_task(request: WSGIRequest, nome_para_key): 
     if request.method == "GET":
         for tarefa_perm in tarefas_validas.tarefas:
