@@ -5,3 +5,9 @@ class Uploadpath(models.Model):
 
     def __str__(self):
         return self.path
+    
+class CaminhoAutomacao(models.Model):
+    nome = models.TextField()
+    
+    def __str__(self):
+        return self.nome

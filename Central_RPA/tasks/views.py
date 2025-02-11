@@ -116,7 +116,7 @@ def start_task(request: WSGIRequest, nome_para_key):
                     tarefa_perm.executar()
                     registrar(request, task=tarefa_perm.nome)
                     return redirect('tasks_index')
-    
+        
     return redirect('tasks_index')
 
 
