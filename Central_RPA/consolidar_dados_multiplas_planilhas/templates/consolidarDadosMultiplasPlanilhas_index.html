@@ -50,7 +50,7 @@ tasks
         {% endfor %} {% endcomment %}
     </div>
 </div>
-{{ name_automation }}
+
 <script>
     async function updateLogs() {
         let response = await fetch("{% url 'informativo_consolidarDadosMultiplasPlanilhas' %}")
