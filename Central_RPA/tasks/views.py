@@ -106,20 +106,22 @@ def index_old(request:WSGIRequest,):
 def status(request: WSGIRequest):
     return JsonResponse(Tarefas.all_status())
 
+def start_task_func(request: WSGIRequest, nome_para_key, ende_return='tasks_index'): 
+    for tarefa_perm in tarefas_validas.tarefas:
+        if tarefa_perm.nome_para_key == nome_para_key:
+            if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
+                tarefa_perm.executar()
+                registrar(request, task=tarefa_perm.nome)
+                return redirect(ende_return)
+        
+    return redirect(ende_return)
+
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   
-@permission_required('tasks.consolidarDadosMultiplasPlanilhas', raise_exception=True)
-def start_task(request: WSGIRequest, nome_para_key): 
+def start_task(request: WSGIRequest, nome_para_key):
     if request.method == "GET":
-        for tarefa_perm in tarefas_validas.tarefas:
-            if tarefa_perm.nome_para_key == nome_para_key:
-                if tarefa_perm.permission in request.user.get_all_permissions(): #type: ignore   
-                    tarefa_perm.executar()
-                    registrar(request, task=tarefa_perm.nome)
-                    return redirect('tasks_index')
-        
+        return start_task_func(request, nome_para_key)
     return redirect('tasks_index')
-
 
 @login_required()
 @permission_required('tasks.tasks', raise_exception=True) #type: ignore   

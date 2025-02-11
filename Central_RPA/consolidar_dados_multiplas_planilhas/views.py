@@ -3,7 +3,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import login_required, permission_required
 from . import models
 from Central_RPA.utils import Utils
-from tasks.views import start_task, tarefas_validas
+from tasks.views import start_task_func, tarefas_validas
 from django.http import JsonResponse
 from .Entities.log_informativo import LogInformativo
 from datetime import datetime
@@ -26,7 +26,7 @@ def testar_automacao(request: WSGIRequest):
         name_automation = ""
     
     if request.method == 'GET':
-        start_task(request=request, nome_para_key=name_automation)
+        start_task_func(request=request, nome_para_key=name_automation)
         return Utils.message_retorno(request, 'Teste iniciado com sucesso', 'index_consolidarDadosMultiplasPlanilhas')
     
     return redirect('index_consolidarDadosMultiplasPlanilhas')
@@ -86,8 +86,8 @@ def upload(request: WSGIRequest):
                     for chunk in file.chunks():
                         destination.write(chunk)
         if files:
-            request.method = 'GET'
-            start_task(request=request, nome_para_key=name_automation)
+            #request.method = 'GET'
+            start_task_func(request=request, nome_para_key=name_automation)
             return Utils.message_retorno(request, 'Arquivos enviados com sucesso', 'index_consolidarDadosMultiplasPlanilhas')
     
     
