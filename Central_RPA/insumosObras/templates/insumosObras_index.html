@@ -14,9 +14,20 @@ Insumos Obras
         <p>--------------------Administração--------------------</p>
         <form action="{% url 'insumosObras_alterPath' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
             {% csrf_token %}
-            <input type="text" name="path" id="path" value="{{ targetPath }}">
+            Caminho da pasta: <input type="text" name="path" id="path" value="{{ targetPath }}">
             <button class="btn btn-danger">Alterar</button>
         </form>
+        <form action="{% url 'insumosObras_alterNomeTarefa' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
+            {% csrf_token %}
+            Conf_Nome_da_Tarefa: <input type="text" name="nome_da_tarefa" id="nome_da_tarefa" value="{{ nome_da_tarefa }}">
+            <button class="btn btn-danger">Alterar</button>
+        </form>
+        <form action="{% url 'insumosObras_alterPasta' %}" method="POST" onsubmit="return confirm('Deseja continuar?')">
+            {% csrf_token %}
+            Conf_Pasta: <input type="text" name="pasta" id="pasta" value="{{ pasta }}">
+            <button class="btn btn-danger">Alterar</button>
+        </form>
+        
         <p>----------------------------------------------------------</p>
     </div>
     {% endif %}

@@ -9,10 +9,28 @@ from typing import List
 import openpyxl
 from tasks.Entities.new_tasks import NewTasks
 
-task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
-#task = NewTasks(value=r"Nome da tarefa: Automações\testes", pasta=r".Automações")
+#task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
 
+    
+def up_date() -> NewTasks:
+    try:
+        nome_tarefa = InsumoObraPath.objects.get(pk=2).path
+    except:
+        nome_tarefa = ""
+        
+    try:
+        past =  InsumoObraPath.objects.get(pk=3).path
+    except InsumoObraPath.DoesNotExist:
+            ast = ""
+        
+    try:
+        return NewTasks(value=nome_tarefa, pasta=past)
+    except:
+        return None #type:ignore
 
+ 
+task = up_date() #type:ignore
+  
 
 class TargetPath:
     sub_path = os.path.normpath('insumosObras/arquivos')
@@ -25,6 +43,26 @@ class TargetPath:
         if not base_path:
             base_path = os.getcwd()
         return os.path.normpath(os.path.join(base_path, TargetPath.sub_path))
+    
+    @staticmethod
+    def nome_da_tarefa():
+        param = ""
+        try:
+            param = InsumoObraPath.objects.get(pk=2).path
+        except InsumoObraPath.DoesNotExist:
+            param = ""
+        return param
+    
+    @staticmethod
+    def pasta():
+        param = ""
+        try:
+            param = InsumoObraPath.objects.get(pk=3).path
+        except InsumoObraPath.DoesNotExist:
+            param = ""
+        return param
+
+
 
 def listar_arquivos(path):
     path = os.path.join(TargetPath.path() ,path)
@@ -43,7 +81,9 @@ def index(request:WSGIRequest):
         'novolarFiles': listar_arquivos('novolar'),
         'convert': listar_arquivos('convert'),
         'finalPath': listar_arquivos('final'),
-        'targetPath': TargetPath.path().replace(TargetPath.sub_path, '')
+        'targetPath': TargetPath.path().replace(TargetPath.sub_path, ''),
+        'nome_da_tarefa': TargetPath.nome_da_tarefa(),
+        'pasta': TargetPath.pasta()
     }
     return render(request, 'insumosObras_index.html', content)
 
@@ -76,8 +116,8 @@ def create(request:WSGIRequest, folder):
         
         mod = request.POST.get('mod')
         
-        valid_sheet = "Base de Dados" if mod == "add" else "CONVERSÃO MATERIAIS APLIC." if mod == "convert" else "None"
-        valids_columns =["Texto do pedido", "Elemento PEP", "Data de lançamento"] if mod == "add" else ["TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"] if mod == "convert" else ["None"]
+        valid_sheet = "Sheet1" if mod == "add" else "CONVERSÃO MATERIAIS APLIC." if mod == "convert" else "None"
+        valids_columns =["TxtBreveMaterial", "Cen.", "Quantidade", "Dt.lçto."] if mod == "add" else ["TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"] if mod == "convert" else ["None"]
 
         if mod == "convert":
             for temp_file in os.listdir(upload_path):
@@ -85,7 +125,7 @@ def create(request:WSGIRequest, folder):
         
         errors = []
         for file in files:
-            if file.name.endswith(('xls', 'xlsx', 'xlsm')):
+            if file.name.lower().endswith(('xls', 'xlsx', 'xlsm')):
                 file_path = os.path.join(upload_path, file.name)
                 with open(file_path, 'wb+') as destination:
                     for chunk in file.chunks():
@@ -131,6 +171,28 @@ def set_path(request:WSGIRequest):
                 print("alterou para", path)
                 InsumoObraPath.objects.update_or_create(pk=1, defaults={'path':path})
                 return Utils.message_retorno(request, text="Alteração Concluida", name_route='insumosObras_index')
+    return redirect('insumosObras_index')
+
+@login_required
+@Utils.superUser_required
+def set_nome_da_tarefa(request:WSGIRequest):
+    if request.method == 'POST':
+        if(param:=request.POST.get('nome_da_tarefa')):
+            if not param:
+                param = ""
+            InsumoObraPath.objects.update_or_create(pk=2, defaults={'path':param})
+            return Utils.message_retorno(request, text="Alteração Concluida", name_route='insumosObras_index')
+    return redirect('insumosObras_index')
+
+@login_required
+@Utils.superUser_required
+def set_pasta(request:WSGIRequest):
+    if request.method == 'POST':
+        if(param:=request.POST.get('pasta')):
+            if not param:
+                param = ""
+            InsumoObraPath.objects.update_or_create(pk=3, defaults={'path':param})
+            return Utils.message_retorno(request, text="Alteração Concluida", name_route='insumosObras_index')
     return redirect('insumosObras_index')
 
 @login_required
