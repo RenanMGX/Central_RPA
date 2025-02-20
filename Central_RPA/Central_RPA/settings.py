@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'baseEstoque',
     'insumosObras',
     'letrasRotinas',
-    'consolidar_dados_multiplas_planilhas'   
+    'consolidar_dados_multiplas_planilhas',
+    'relatorios_pep', 
 ]
 
 MIDDLEWARE = [

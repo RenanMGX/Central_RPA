@@ -47,7 +47,10 @@
 
                 {% if 'tasks.consolidarDadosMultiplasPlanilhas' in request.user.get_all_permissions or request.user.is_superuser %}<li {% if request.path == '/consolidarDadosMultiplasPlanilhas/' %}class="active"{% endif %} >
                     <a href="{% url "index_consolidarDadosMultiplasPlanilhas" %}">Consolidar Dados Multiplas Planilhas</a></li>{% endif %} 
-    
+
+                {% if 'tasks.relatoriosPep' in request.user.get_all_permissions or request.user.is_superuser %}<li {% if request.path == '/relatorios_pep/' %}class="active"{% endif %} >
+                    <a href="{% url "index_relatoriosPep" %}">Relatorios PEP</a></li>{% endif %} 
+        
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="bt_logout"><a href="{% url 'logout' %}">logout</a></li>

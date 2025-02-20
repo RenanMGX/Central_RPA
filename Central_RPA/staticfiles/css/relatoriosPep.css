@@ -1,0 +1,38 @@
+.bloco {
+    border: 1px solid #000;
+}
+
+.lista_divisao {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cell_divisao {
+    background-color: #051eff;
+    border-radius: 6px;
+    padding: 1px 22px 1px 5px;
+    color: white;
+    margin: 2px;
+}
+
+.cell_divisao:hover {
+    background-color: #010d7a;;
+    cursor: pointer;
+}
+
+.eliminar_divi {
+    background-color: #8b0606;
+    padding: 1px 5px;
+    font-size: 60%;
+    border-radius: 20px;
+    position: relative;
+    top: 5px;
+    height: 0%;
+    left: -20px;
+    color: white;
+}
+.eliminar_divi:hover {
+    background-color: #ff0000;
+    cursor: pointer;
+}

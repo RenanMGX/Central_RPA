@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Relatorios PEP
+{% endblock %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/relatoriosPep.css' %}>
+
+<div class="container">
+    <div class="bloco">
+        <div class="form">
+
+            <div class="lista_divisao" id="lista_divisao"></div>
+
+            <form action="#" method="POST" class="form-horizontal" onsubmit="return confirm('teste')">
+                {% csrf_token %}
+                <input type="submit" >
+            </form>
+        </div>    
+    </div>
+</div>
+
+<button id="teste" onclick="teste()">teste</button>
+<script>
+    function teste(div){
+        if (confirm("Deseja eliminar a divisão '" + div + "'?")){
+            console.log(`divisão ${div} eliminada`);
+        }
+    }
+
+    function listar_divi(lista){
+        let element_divi = document.getElementById('lista_divisao');
+        element_divi.innerHTML = '';
+        for (let div of lista){
+            element_divi.innerHTML += `
+                <span class = "cell_divisao" onClick="console.log('teste')">
+                    <span>${div}</span>
+                </span>
+                <span class="eliminar_divi" onClick="teste('${div}')">X</span>
+            `
+        }
+    }
+    listar_divi(['A080', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052']);
+
+</script>
+
+{% endblock %}
