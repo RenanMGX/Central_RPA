@@ -1,5 +1,7 @@
 .bloco {
-    border: 1px solid #000;
+    background-color: thistle;
+    border-radius: 15px;
+    padding: 5px 1px;
 }
 
 .lista_divisao {

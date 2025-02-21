@@ -85,18 +85,11 @@
     </div>
 </div>
 
-<button id="teste" onclick="teste()">teste</button>
 
 
 <script src={% static 'js/relatorios_pep.js' %}></script>
 <script>
     let lista_divisao = new Divisao({{ divisoes|safe }});
-
-    function teste(div){
-        if (confirm("Deseja eliminar a divisão '" + div + "'?")){
-            console.log(`divisão ${div} eliminada`);
-        }
-    }
 
     function listar_divi(lista){
         let element_divi = document.getElementById('lista_divisao');
