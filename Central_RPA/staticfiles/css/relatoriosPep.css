@@ -16,10 +16,10 @@
     margin: 2px;
 }
 
-.cell_divisao:hover {
+/* .cell_divisao:hover {
     background-color: #010d7a;;
     cursor: pointer;
-}
+} */
 
 .eliminar_divi {
     background-color: #8b0606;
@@ -35,4 +35,47 @@
 .eliminar_divi:hover {
     background-color: #ff0000;
     cursor: pointer;
+}
+
+.inupt_text {
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+}
+
+.form_mod_lista_divisao {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: baseline;
+    margin: 10px 1px;
+}
+
+.campo_remover_tudo {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 20px 1px;
+}
+.lista_divisao {
+    background-color: #ccff0073;
+    padding: 10px;
+    margin: 10px 20px;
+    border-radius: 5px;
 }

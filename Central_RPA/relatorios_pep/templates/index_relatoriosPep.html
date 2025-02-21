@@ -9,21 +9,89 @@
 <link rel="stylesheet" type="text/css" href={% static 'css/relatoriosPep.css' %}>
 
 <div class="container">
-    <div class="bloco">
+    {% if request.user.is_superuser %}
+    -------------------------ADMIN-------------------------
+    <form action="{% url 'adminConfig_relatoriosPep' %}" method="POST" class="form-horizontal">
+        {% csrf_token %}
+        automation_path: <input type="text" value="{{ automation_path_value }}" id="automation_path" name="automation_path" class="inupt_text" style="width:70%"><br>
+        automation: <input type="text" value="{{ automation_value }}" id="automation" name="automation" class="inupt_text" style="width:70%"><br>
+        Path Sharepoint: <input type="text" value="{{ sharepoint_path }}" id="sharepoint_path" name="sharepoint_path" class="inupt_text" style="width:70%"><br>
+        <input type="submit" value="Atualizar" class="btn btn-success"><br>
+    </form>
+    -------------------------ADMIN-------------------------
+    {% endif %}
+    <div class="bloco" id="bloco_em_exec" style="">
+        <h2 id="bloco_text"></h2>
+    </div>
+    <div class="bloco" id="bloco" style="display: none;">
+        
+        
+        <div class="form_mod_lista_divisao">
+            <input type="text" id="input_divisao" class="inupt_text" placeholder="Divisão">
+            <button id="btn_add_divisao" class="btn btn-success" onclick="add_item_lista()">Adicionar</button>
+        </div>
+        <div class="lista_divisao" id="lista_divisao"></div>
+        <div class="campo_remover_tudo">
+            <button class="btn btn-danger" onclick="lista_divisao.remover_tudo(); listar_divi(lista_divisao.divisao)">Remover Tudo</button>
+        </div>
+
         <div class="form">
-
-            <div class="lista_divisao" id="lista_divisao"></div>
-
-            <form action="#" method="POST" class="form-horizontal" onsubmit="return confirm('teste')">
+            <form action="{% url 'start_relatoriosPep' %}" method="POST" class="form-horizontal" onsubmit="return enviar()">
                 {% csrf_token %}
-                <input type="submit" >
+
+                <input type='hidden' name='divisoes' id='divisoes' value=''>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="email">Data: </label>
+                    <div class="col-sm-3">
+                      <input type="date"  id="date" name="date" class="form-control">
+                    </div>
+                  </div>
+
+                <div id="bt_ate" class="form-group">
+                    <label class="control-label col-sm-2 "></label>
+                    <div class="col-sm-3">
+                        <button type="button" class='btn btn-warning btn-block' onclick="add_ate()">Adicionar Até</button>
+                    </div>
+                </div>
+
+                  <div id="campo_ate" class="form-group" style="display: none;">
+                    <label class="control-label col-sm-2" for="email">Ate: </label>
+                    <div class="col-sm-3">
+                      <input type="date"  id="final_date" name="final_date" class="form-control">
+                    </div>
+                  </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-2">Acumulado: </label>
+                    <div class="col-sm-2">
+                        <input type="checkbox" id="acumulado" name="acumulado" class="form-control" style="width:15%; height:20px " checked>
+                    </div>
+                </div>
+
+
+            
+                              
+                <div class="form-group">
+                    <label class="control-label col-sm-2 "></label>
+                    <div class="col-sm-2">
+                        <input type='submit' value="Iniciar" class='btn btn-success btn-block'>
+                    </div>
+                </div>
+
+
             </form>
         </div>    
     </div>
 </div>
 
 <button id="teste" onclick="teste()">teste</button>
+
+
+<script src={% static 'js/relatorios_pep.js' %}></script>
 <script>
+    let lista_divisao = new Divisao({{ divisoes|safe }});
+
     function teste(div){
         if (confirm("Deseja eliminar a divisão '" + div + "'?")){
             console.log(`divisão ${div} eliminada`);
@@ -38,11 +106,79 @@
                 <span class = "cell_divisao" onClick="console.log('teste')">
                     <span>${div}</span>
                 </span>
-                <span class="eliminar_divi" onClick="teste('${div}')">X</span>
+                <span class="eliminar_divi" onClick="remover_item_lista('${div}')">X</span>
             `
         }
     }
-    listar_divi(['A080', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052', 'A052']);
+
+    function remover_item_lista(item) {
+        lista_divisao.remover_item(item)
+        listar_divi(lista_divisao.divisao);
+    }
+
+    function add_item_lista() {
+        var elemet_divisao = document.getElementById('input_divisao');
+        var item = elemet_divisao.value;
+        if (item){
+            lista_divisao.add_item(item.toUpperCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""));
+            listar_divi(lista_divisao.divisao);
+        }
+        elemet_divisao.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var dataAtual = new Date().toISOString().substring(0, 10);
+        document.getElementById('date').value = dataAtual;
+      });
+
+    
+    function add_ate(){
+        var campo_ate = document.getElementById('campo_ate');
+        campo_ate.style.display = '';
+        var bt_ate = document.getElementById('bt_ate');
+        bt_ate.style.display = 'none';
+    }
+
+    function enviar(){
+        if (confirm("deseja continuar?")){
+            document.getElementById('divisoes').value = lista_divisao.divisao
+            return true
+        }
+        return false
+    }
+
+    async function check_status(){
+        let response = await fetch("{% url 'statusTarefa_relatoriosPep'%}", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+        let data = await response.json();
+        if (data.status){
+            let status = data.status;
+            if (status != "Pronto"){
+                document.getElementById("bloco_text").innerHTML = "Em Execução";
+                document.getElementById("bloco").style.display = "none";
+                document.getElementById("bloco_em_exec").style.display = "";
+                return
+            }else{
+                document.getElementById("bloco").style.display = "";
+                document.getElementById("bloco_em_exec").style.display = "none";
+                return
+            }
+            document.getElementById("bloco_text").innerHTML = "Não Identificado";
+            return
+        }
+    }
+
+
+    
+    listar_divi(lista_divisao.divisao);
+    check_status();
+    setInterval(check_status, 1000);
+
 
 </script>
 

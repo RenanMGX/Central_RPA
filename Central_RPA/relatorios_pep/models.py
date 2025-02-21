@@ -1,3 +1,8 @@
 from django.db import models
 
-# Create your models here.
+class AdminConfig(models.Model):
+    argv = models.TextField()
+    value = models.TextField()
+    
+    def __str__(self):
+        return f"{self.argv}: {self.value}"
