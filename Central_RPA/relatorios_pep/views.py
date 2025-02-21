@@ -62,7 +62,7 @@ def start(request: WSGIRequest):
         argvs = {}
         if (divisoes:=post.get('divisoes')):
             if divisoes:
-                argvs["divisoes"] = divisoes.split(',')
+                argvs["divisao"] = divisoes.split(',')
             else:
                 return Utils.message_retorno(request, "Divisões não informadas", name_route="index_relatoriosPep")
         else:
@@ -162,3 +162,25 @@ def statusTarefa(request: WSGIRequest):
         return JsonResponse({"status": status})
     
     return JsonResponse({"status": "Error"})
+
+
+@login_required
+@permission_required('tasks.relatoriosPep', raise_exception=True)
+def lista_downloads(request: WSGIRequest):
+    try:
+        automation_path = models.AdminConfig.objects.get(argv="automation_path").value
+    except:
+        automation_path = ""
+        
+    if os.path.exists(automation_path):
+        download_path = os.path.join(automation_path, "fileZip")
+        if os.path.exists(download_path):
+            lista_files = []
+            for file in os.listdir(download_path):
+                file_path = os.path.join(download_path, file)
+                if os.path.isfile(file_path):
+                    date_file = os.path.getmtime(file_path)
+                    lista_files.append({"name":file, "path":file_path, "date": datetime.fromtimestamp(date_file).strftime('%d/%m/%Y %H:%M:%S')})
+            return JsonResponse(lista_files, safe=False)
+    
+    return JsonResponse([], safe=False)

@@ -2,6 +2,12 @@
     background-color: thistle;
     border-radius: 15px;
     padding: 5px 1px;
+    margin: 10px 0px;
+}
+
+.bloco h3 {
+    display: flex;
+    justify-content: center;
 }
 
 .lista_divisao {

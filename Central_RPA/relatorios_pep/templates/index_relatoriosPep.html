@@ -24,7 +24,8 @@
         <h2 id="bloco_text"></h2>
     </div>
     <div class="bloco" id="bloco" style="display: none;">
-        
+        <h3>Automação</h3>
+        <br>
         
         <div class="form_mod_lista_divisao">
             <input type="text" id="input_divisao" class="inupt_text" placeholder="Divisão">
@@ -82,6 +83,11 @@
 
             </form>
         </div>    
+    </div>
+    <div class="bloco" id="bloco_download">
+        <h3>Download</h3>
+        <div id="downloads">
+        </div>
     </div>
 </div>
 
@@ -166,12 +172,40 @@
         }
     }
 
+    async function listar_download(){
+        let response = await fetch("{% url 'listarDownload_relatoriosPep' %}", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+        let data = await response.json();
+        if (data){
+            document.getElementById('downloads').innerHTML = '';
+            for (let item of data){
+                document.getElementById('downloads').innerHTML += `
+                <a href="${item.path}" download>
+                    <span>${item.name}</span></a>
+                    <span>${item.date}</span>
+                <br>
+                `;
+            }
+        }
 
+    }
+
+    listar_download();
     
+    function auto_atu(){
+        setInterval(check_status, 1000);
+    }
+
+
+
     listar_divi(lista_divisao.divisao);
     check_status();
-    setInterval(check_status, 1000);
-
+    auto_atu();
 
 </script>
 
