@@ -193,7 +193,7 @@
             for (let item of data){
                 document.getElementById('downloads').innerHTML += `
                 <div>
-                    <a href="${item.path}" download>
+                    <a href=\"{% url 'processComi_download' %}?path=${item.path}\">
                         <span>${item.name}</span></a>
                         <span>${item.date}</span>
                     <br>

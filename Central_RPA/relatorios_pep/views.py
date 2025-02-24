@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import permission_required, login_required
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from datetime import datetime
 from Central_RPA.utils import Utils
 import os
@@ -204,3 +204,17 @@ def get_informativo(request: WSGIRequest):
                 return JsonResponse(informativo, safe=False)
     
     return JsonResponse([], safe=False)
+
+@login_required()
+@permission_required('tasks.relatoriosPep', raise_exception=True)
+def download_file(request: WSGIRequest):
+    if request.method == "GET":
+        file_path = request.GET.get('path')
+        if file_path:
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/octet-stream")
+                    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                    return response
+            raise Http404
+    return redirect('index_relatoriosPep')
