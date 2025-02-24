@@ -199,7 +199,8 @@ def get_informativo(request: WSGIRequest):
         informativo_path = os.path.join(automation_path, "informativo.json")
         if os.path.exists(informativo_path):
             with open(informativo_path, 'r') as file:
-                informativo = json.load(file)
+                informativo:list = json.load(file)
+                informativo.reverse()
                 return JsonResponse(informativo, safe=False)
     
     return JsonResponse([], safe=False)
