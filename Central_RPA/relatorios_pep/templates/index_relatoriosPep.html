@@ -84,9 +84,14 @@
             </form>
         </div>    
     </div>
-    <div class="bloco" id="bloco_download">
+    <div class="bloco" id="bloco_download" style="display:none">
         <h3>Download</h3>
-        <div id="downloads">
+        <div id="downloads" class="downloads">
+        </div>
+    </div>
+    <div class="bloco" id="bloco_informativo">
+        <h3>Informativo de Exdecução</h3>
+        <div id="informativo" class="informativo">
         </div>
     </div>
 </div>
@@ -160,10 +165,12 @@
             if (status != "Pronto"){
                 document.getElementById("bloco_text").innerHTML = "Em Execução";
                 document.getElementById("bloco").style.display = "none";
+                document.getElementById("bloco_download").style.display = "none";
                 document.getElementById("bloco_em_exec").style.display = "";
                 return
             }else{
                 document.getElementById("bloco").style.display = "";
+                document.getElementById("bloco_download").style.display = "";
                 document.getElementById("bloco_em_exec").style.display = "none";
                 return
             }
@@ -185,20 +192,59 @@
             document.getElementById('downloads').innerHTML = '';
             for (let item of data){
                 document.getElementById('downloads').innerHTML += `
-                <a href="${item.path}" download>
-                    <span>${item.name}</span></a>
-                    <span>${item.date}</span>
-                <br>
+                <div>
+                    <a href="${item.path}" download>
+                        <span>${item.name}</span></a>
+                        <span>${item.date}</span>
+                    <br>
+                </div>
                 `;
             }
         }
 
     }
 
+    async function get_informativo(){
+        let response = await fetch("{% url 'informativo_relatoriosPep' %}", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+        let data = await response.json();
+        return data
+    }
+
+    async function informativo(){
+        let informativo_texto = await get_informativo();
+        console.log(informativo_texto)
+        document.getElementById('informativo').innerHTML = '';
+        for (let item of informativo_texto){
+            let color = "";
+            if (item.includes("<django:green>")){
+                color = 'style="color:green"';
+            }else if (item.includes("<django:red>")){
+                color = 'style="color:red"';
+            }else if (item.includes("<django:blue>")){
+                color = 'style="color:blue"';
+            }else if (item.includes("<django:yellow>")){
+                color = 'style="color:yellow"';
+            }
+            
+            document.getElementById('informativo').innerHTML += `
+                <div>
+                    <span ${color}>${item}</span>
+                </div>
+            `;
+        }
+    }
+
     listar_download();
     
     function auto_atu(){
         setInterval(check_status, 1000);
+        setInterval(informativo, 1000);
     }
 
 

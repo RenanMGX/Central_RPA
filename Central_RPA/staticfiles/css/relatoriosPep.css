@@ -87,3 +87,10 @@
     margin: 10px 20px;
     border-radius: 5px;
 }
+
+.downloads {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+}

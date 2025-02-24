@@ -7,4 +7,5 @@ urlpatterns = [
     path('adminConfig', views.adminConfig, name='adminConfig_relatoriosPep'),
     path('statusTarefa', views.statusTarefa, name='statusTarefa_relatoriosPep'),
     path('listarDownload', views.lista_downloads, name='listarDownload_relatoriosPep'),
+    path('informativo', views.get_informativo, name='informativo_relatoriosPep'),
 ]

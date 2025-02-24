@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import permission_required, login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from datetime import datetime
 from Central_RPA.utils import Utils
 import os
@@ -30,19 +30,19 @@ def index(request: WSGIRequest):
         automation = models.AdminConfig.objects.get(argv="automation").value
     except:
         automation = ""
-    
+        
     try:
         sharepoint_path = models.AdminConfig.objects.get(argv="sharepoint_path").value
     except:
         sharepoint_path = ""
-    
-    #print(get_tarefa(automation))
+        
+        #print(get_tarefa(automation))
     try:
         divisoes = DiviFromSharepoint(sharepoint_path, datetime.now())
         divisoes = divisoes.get_lista_divisao("Obra em andamento")
     except:
         divisoes = []
-    
+        
     content = {
         "automation_path_value": automation_path,
         "automation_value": automation,
@@ -50,6 +50,7 @@ def index(request: WSGIRequest):
         "divisoes": divisoes,
     }
     return render(request, 'index_relatoriosPep.html', content)
+    
 
 
 @login_required
@@ -150,16 +151,17 @@ def adminConfig(request: WSGIRequest):
 @login_required
 @permission_required('tasks.relatoriosPep', raise_exception=True)
 def statusTarefa(request: WSGIRequest):
-    try:
-        tarefa = models.AdminConfig.objects.get(argv="automation").value
-    except:
-        tarefa = ""
-        
-    tarefa = get_tarefa(tarefa)
-    if tarefa:
-        status = tarefa.status()
+    if request.method == 'GET':
+        try:
+            tarefa = models.AdminConfig.objects.get(argv="automation").value
+        except:
+            tarefa = ""
+            
+        tarefa = get_tarefa(tarefa)
+        if tarefa:
+            status = tarefa.status()
 
-        return JsonResponse({"status": status})
+            return JsonResponse({"status": status})
     
     return JsonResponse({"status": "Error"})
 
@@ -167,20 +169,37 @@ def statusTarefa(request: WSGIRequest):
 @login_required
 @permission_required('tasks.relatoriosPep', raise_exception=True)
 def lista_downloads(request: WSGIRequest):
-    try:
-        automation_path = models.AdminConfig.objects.get(argv="automation_path").value
-    except:
-        automation_path = ""
-        
-    if os.path.exists(automation_path):
-        download_path = os.path.join(automation_path, "fileZip")
-        if os.path.exists(download_path):
-            lista_files = []
-            for file in os.listdir(download_path):
-                file_path = os.path.join(download_path, file)
-                if os.path.isfile(file_path):
-                    date_file = os.path.getmtime(file_path)
-                    lista_files.append({"name":file, "path":file_path, "date": datetime.fromtimestamp(date_file).strftime('%d/%m/%Y %H:%M:%S')})
-            return JsonResponse(lista_files, safe=False)
+    if request.method == 'GET':
+        try:
+            automation_path = models.AdminConfig.objects.get(argv="automation_path").value
+        except:
+            automation_path = ""
+            
+        if os.path.exists(automation_path):
+            download_path = os.path.join(automation_path, "fileZip")
+            if os.path.exists(download_path):
+                lista_files = []
+                for file in os.listdir(download_path):
+                    file_path = os.path.join(download_path, file)
+                    if os.path.isfile(file_path):
+                        date_file = os.path.getmtime(file_path)
+                        lista_files.append({"name":file, "path":file_path, "date": datetime.fromtimestamp(date_file).strftime('%d/%m/%Y %H:%M:%S')})
+                return JsonResponse(lista_files, safe=False)
+    
+    return JsonResponse([], safe=False)
+
+@login_required
+@permission_required('tasks.relatoriosPep', raise_exception=True)
+def get_informativo(request: WSGIRequest):
+    if request.method == 'GET':
+        try:
+            automation_path = models.AdminConfig.objects.get(argv="automation_path").value
+        except:
+            automation_path = ""
+        informativo_path = os.path.join(automation_path, "informativo.json")
+        if os.path.exists(informativo_path):
+            with open(informativo_path, 'r') as file:
+                informativo = json.load(file)
+                return JsonResponse(informativo, safe=False)
     
     return JsonResponse([], safe=False)
