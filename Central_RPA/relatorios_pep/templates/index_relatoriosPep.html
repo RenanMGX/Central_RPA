@@ -90,7 +90,7 @@
         </div>
     </div>
     <div class="bloco" id="bloco_informativo">
-        <h3>Informativo de Exdecução</h3>
+        <h3>Informativo de Execução</h3>
         <div id="informativo" class="informativo">
         </div>
     </div>
@@ -240,18 +240,19 @@
         }
     }
 
-    listar_download();
     
     function auto_atu(){
         setInterval(check_status, 1000);
         setInterval(informativo, 1000);
+        setInterval(listar_download, 2000)
     }
-
-
-
+    
+    
+    
     listar_divi(lista_divisao.divisao);
     check_status();
     auto_atu();
+    listar_download();
 
 </script>
 
