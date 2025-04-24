@@ -116,7 +116,7 @@ def create(request:WSGIRequest, folder):
         
         mod = request.POST.get('mod')
         
-        valid_sheet = "Sheet1" if mod == "add" else "CONVERSÃO MATERIAIS APLIC." if mod == "convert" else "None"
+        valid_sheet = "Base de Dados" if mod == "add" else "CONVERSÃO MATERIAIS APLIC." if mod == "convert" else "None"
         valids_columns =["TxtBreveMaterial", "Cen.", "Quantidade", "Dt.lçto."] if mod == "add" else ["TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"] if mod == "convert" else ["None"]
 
         if mod == "convert":
