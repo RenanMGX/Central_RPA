@@ -11,6 +11,8 @@ import re
 from Entities.send_email import SendEmail
 from Entities.credenciais import Credential
 from Central_RPA.utils import Utils
+import os
+from django.http import HttpResponse, Http404
 
 @login_required()
 def index(request:WSGIRequest):
@@ -107,4 +109,15 @@ class AlterarSenha(PasswordChangeView):
         messages.error(self.request, f'Ocorreu um erro ao tentar alterar a senha. Verifique os campos abaixo.')
         return super().form_invalid(form)
     
-
+@login_required()
+def download_file_all(request: WSGIRequest):
+    if request.method == "GET":
+        file_path = request.GET.get('path')
+        if file_path:
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/octet-stream")
+                    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                    return response
+            raise Http404
+    return redirect('home_index')

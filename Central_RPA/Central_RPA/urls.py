@@ -49,4 +49,6 @@ urlpatterns = [
     path('letrasRotinas/', include('letrasRotinas.urls')),
     path('consolidarDadosMultiplasPlanilhas/', include('consolidar_dados_multiplas_planilhas.urls')),
     path('relatorios_pep/', include('relatorios_pep.urls')),
+    path('Financeiro/', include('Financeiro.urls')),
+    path('download', views.download_file_all, name='download'),
 ]

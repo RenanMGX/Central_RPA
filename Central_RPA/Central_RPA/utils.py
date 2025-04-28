@@ -6,6 +6,8 @@ import base64
 from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
+import os
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 class Utils:
@@ -40,3 +42,25 @@ class Utils:
         except:
             raise Http404(f"rota '{name_route}' não encontrada")
     
+    def upfile(*, path:str, file:InMemoryUploadedFile, new_name:str=""):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        if new_name:
+            path = os.path.join(path, new_name)
+        else:
+            path = os.path.join(path, file.name)
+            
+        with open(path, 'wb+') as _file:
+            for chunk in file.chunks():
+                _file.write(chunk)
+        
+        return path
+        
+    def download_file(file_path:str):
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/octet-stream")
+                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                return response
+        raise Http404

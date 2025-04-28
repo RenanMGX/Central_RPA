@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Relatorio Abertura Despesas
+{% endblock %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/relatAberturaDesp.css' %}>
+
+<div class="conteudo">
+    {% if request.user.is_superuser %}
+    <div class="adm">
+        <h3>Admin</h3>
+        <form action="{% url 'adminConfig_relatAberturaDesp' %}" method="POST" style="display: flex; flex-direction: column;">
+            {% csrf_token %}
+            <input type="text" name="nome_tarefa" value="{{ nome_tarefa }}" placeholder="Nome da Tarefa">
+            <input type="text" name="caminho_tarefa" value="{{ caminho_tarefa }}" placeholder="Caminho da Tarefa">
+            <input type="submit" value="Atualizar">
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="descricao">
+        <p>descricao</p>
+    </div>
+    
+    <div class="formularios" id="formularios"  style="display: None;">
+        <form class="form-horizontal" action="{% url 'upFiles_relatAberturaDesp' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>Relatorio Abertura Despesas</h3>
+
+            <div class="formulario-file">
+                <label>Data: </label>
+                <input type="date" name="date" value="{{ date }}" required>
+            </div>
+            
+            <div class="formulario-file">
+                <label>Despesas Adm: </label>
+                <input type="file" name="desp_adm">
+            </div>
+
+            <div class="formulario-file">
+                <label >Despesas Comerciais: </label>
+                <input type="file" name="desp_comercial">
+            </div>
+            
+            <div class="formulario-file">
+                <label >Outras Dispesas: </label>
+                <input type="file" name="outras_despesas">
+            </div>
+            
+            
+            <div class="formulario-submit">
+                {% comment %} <label class="control-label col-sm-1"></label> {% endcomment %}
+                <button type="submit" class="btn btn-success btn-block" value="Enviar"  id="bt_iniciar">Iniciar</button>
+                <span class="badge badge-warning" id="log_status" style="display:None">Executando</span>
+            </div>
+        
+           
+        </form>
+    </div>
+    
+    <div class="executando" id="executando" style="display: None;">
+        <p>EXECUTANDO</p>
+    </div>
+
+    <div class="download">
+        <h3>Lista de Download</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Tamanho</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody id="downloads">
+
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="logs">
+        <p>logs</p>
+    </div>
+
+</div>
+
+
+{% comment %} <script src={% static 'js/relatorios_pep.js' %}></script> {% endcomment %}
+<script>
+    async function status_tarefa() {
+        const response = await fetch("{% url 'status_relatAberturaDesp' %}");
+        const data = await response.json();
+
+        if (data.status == "Em execução"){
+            document.getElementById("executando").style.display = "";
+            document.getElementById("formularios").style.display = "none";
+        }else if (data.status == "Pronto"){
+            document.getElementById("executando").style.display = "none";
+            document.getElementById("formularios").style.display = "";
+        }
+    }
+
+    async function lista_tarefas() {
+        const response = await fetch("{% url 'listaTarefas_relatAberturaDesp' %}");
+        const data = await response.json();
+        document.getElementById("downloads").innerHTML = "";
+        for (let i = 0; i < data.length; i++){
+            console.log(data[i]);
+            document.getElementById("downloads").innerHTML += `
+                <tr>
+                    <td>${data[i].name}</td>
+                    <td>${data[i].data}</td>
+                    <td>${data[i].tamanho}</td>
+                    <td><a href="{% url 'download' %}?path=${data[i].caminho}">Download</a></td>
+                </tr>`;
+        }
+    }
+
+    function execute_all() {
+        status_tarefa();    
+        setInterval(status_tarefa, 1000); // Atualiza a cada 5 segundos
+        lista_tarefas();
+        {% comment %} setInterval(lista_tarefas, 1000); // Atualiza a cada 5 segundos {% endcomment %}
+    }
+
+execute_all()
+</script>
+
+
+{% endblock %}
