@@ -51,7 +51,6 @@ class Config:
         models.FinanceiroConfig.objects.filter(nome=tag).update(valor=value)
 
 config_relatAberturaDesp = Config()
-print(config_relatAberturaDesp.nome_tarefa, config_relatAberturaDesp.caminho_tarefa)
 
 @login_required
 @Utils.superUser_required
