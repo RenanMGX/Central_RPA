@@ -29,7 +29,7 @@ def start(request: WSGIRequest):
             tarefas_validas.listar_tarefas()
             for task in tarefas_validas.tarefas:
                 if task.nome == r"Automações\ProcessoComissao":
-                    print(task.status())
+                    #print(task.status())
                     Preparar.limpar_pasta()
                     if Preparar.send_param(date):
                         task.executar()

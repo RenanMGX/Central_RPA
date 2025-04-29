@@ -40,7 +40,7 @@ def create_user(request:WSGIRequest):
     if request.user.is_superuser: # type: ignore
         return render(request, 'create_user.html')
     
-    print(f"o user {request.user} não pode acessar esta pagina")
+    #print(f"o user {request.user} não pode acessar esta pagina")
     return redirect('home_index')
 
 @login_required()

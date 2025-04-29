@@ -151,7 +151,7 @@ def create(request:WSGIRequest, folder):
             else:
                 errors.append(f"a planilha {file.name} não é um arquivo excel")
         
-        print("aqui")
+        #print("aqui")
         if errors:
             return Utils.message_retorno(request, text=f"Erro ao enviar arquivos\n{'\n'.join(errors)}", name_route='insumosObras_index')
         else:
@@ -168,7 +168,7 @@ def set_path(request:WSGIRequest):
             if not path:
                 path = os.getcwd()
             if os.path.exists(path):
-                print("alterou para", path)
+                #print("alterou para", path)
                 InsumoObraPath.objects.update_or_create(pk=1, defaults={'path':path})
                 return Utils.message_retorno(request, text="Alteração Concluida", name_route='insumosObras_index')
     return redirect('insumosObras_index')
@@ -204,7 +204,7 @@ def status(request:WSGIRequest):
 @login_required
 @permission_required('tasks.insumosObras', raise_exception=True)
 def start(request:WSGIRequest):
-    print(request.method)
+    #print(request.method)
     if request.method == 'GET':
         task.start()
 

@@ -81,7 +81,7 @@ def adminConfig_relatAberturaDesp(request: WSGIRequest):
 @login_required
 @permission_required('tasks.financeiro_relatAberturaDesp', raise_exception=True)
 def index_relatAberturaDesp(request:WSGIRequest):
-    print(tarefas.listar_tarefas())
+    #print(tarefas.listar_tarefas())
     content = {
         "teste": "testado",
         "nome_tarefa": config_relatAberturaDesp.nome_tarefa,
@@ -183,7 +183,7 @@ def log_relatAberturaDesp(request: WSGIRequest):
                 lista:list = json.load(_file)
                 lista.reverse()
                 return JsonResponse(lista, safe=False)
-        print(path_log)
+        #print(path_log)
         
         
     return JsonResponse([], safe=False)

@@ -216,7 +216,8 @@ def pagamentos_diarios(request: WSGIRequest):
         if (path:=infor.get('django_argv')):
             django_argv_path = path
     except json.JSONDecodeError as e:
-        print(e)
+        pass
+        #print(e)
         
     execucoes = models.RegistroExec.objects.all()
     ".filter(nome_tarefa=task.nome)"
