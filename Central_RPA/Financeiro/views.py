@@ -9,6 +9,7 @@ from typing import Literal
 import json
 from tasks.views import TarefasValidas
 import shutil
+from dateutil.relativedelta import relativedelta
 
 tarefas = TarefasValidas()
 
@@ -86,7 +87,7 @@ def index_relatAberturaDesp(request:WSGIRequest):
         "teste": "testado",
         "nome_tarefa": config_relatAberturaDesp.nome_tarefa,
         "caminho_tarefa": config_relatAberturaDesp.caminho_tarefa,
-        "date": datetime.now().strftime("%Y-%m-%d"),
+        "date": (datetime.now().replace(day=1) - relativedelta(months=1)).strftime("%Y-%m-%d"),
     }
     
     return render(request, 'relatAberturaDesp/index.html', content)
@@ -143,7 +144,7 @@ def upFiles_relatAberturaDesp(request:WSGIRequest):
 
 @login_required
 @permission_required('tasks.financeiro_relatAberturaDesp', raise_exception=True)
-def tarefa_status(request: WSGIRequest):
+def tarefa_status_relatAberturaDesp(request: WSGIRequest):
     if request.method == "GET":
         for tarefa in tarefas.listar_tarefas():
             if tarefa.nome == config_relatAberturaDesp.nome_tarefa:
@@ -153,7 +154,7 @@ def tarefa_status(request: WSGIRequest):
 
 @login_required
 @permission_required('tasks.financeiro_relatAberturaDesp', raise_exception=True)
-def lista_files(request: WSGIRequest):
+def lista_files_relatAberturaDesp(request: WSGIRequest):
     if request.method == "GET":
         _lista_files = []
         path_file = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'files')
@@ -172,5 +173,20 @@ def lista_files(request: WSGIRequest):
         return JsonResponse(_lista_files, safe=False)
     
     return JsonResponse({'status': None})
+
+@login_required
+@permission_required('tasks.financeiro_relatAberturaDesp', raise_exception=True)
+def log_relatAberturaDesp(request: WSGIRequest):
+    if request.method == "GET":
+        path_log = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'json', 'informativo.json')
+        if os.path.exists(path_log):
+            with open(path_log, 'r', encoding='utf-8') as _file:
+                lista:list = json.load(_file)
+                lista.reverse()
+                return JsonResponse(lista, safe=False)
+        print(path_log)
+        
+        
+    return JsonResponse([], safe=False)
 
 ##################################################

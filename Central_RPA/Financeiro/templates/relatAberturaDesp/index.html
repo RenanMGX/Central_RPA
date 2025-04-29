@@ -22,7 +22,10 @@
     {% endif %}
 
     <div class="descricao">
-        <p>descricao</p>
+        <h1>Relatorio Abertura Despesas</h1>
+        <p>Este script é responsável por atualizar relatórios de despesas de diversas categorias.</p>
+        <p>Ele processa os dados e cria tabelas para Despesas Administrativas, Comerciais e Outras Despesas.</p>
+
     </div>
     
     <div class="formularios" id="formularios"  style="display: None;">
@@ -65,7 +68,7 @@
         <p>EXECUTANDO</p>
     </div>
 
-    <div class="download">
+    <div class="download" id="download" style="display: None;">
         <h3>Lista de Download</h3>
         <table class="table">
             <thead>
@@ -82,8 +85,7 @@
         </table>
     </div>
     
-    <div class="logs">
-        <p>logs</p>
+    <div class="logs" id="logs" style="background-color: midnightblue">
     </div>
 
 </div>
@@ -98,9 +100,11 @@
         if (data.status == "Em execução"){
             document.getElementById("executando").style.display = "";
             document.getElementById("formularios").style.display = "none";
+            document.getElementById("download").style.display = "none";
         }else if (data.status == "Pronto"){
             document.getElementById("executando").style.display = "none";
             document.getElementById("formularios").style.display = "";
+            document.getElementById("download").style.display = "";
         }
     }
 
@@ -109,7 +113,6 @@
         const data = await response.json();
         document.getElementById("downloads").innerHTML = "";
         for (let i = 0; i < data.length; i++){
-            console.log(data[i]);
             document.getElementById("downloads").innerHTML += `
                 <tr>
                     <td>${data[i].name}</td>
@@ -120,11 +123,38 @@
         }
     }
 
+    async function logs() {
+        const response = await fetch("{% url 'log_relatAberturaDesp' %}");
+        const data = await response.json();
+        console.log(data);
+        document.getElementById("logs").innerHTML = "";
+
+        for (let i = 0; i < data.length; i++){
+            color = "";
+            if (data[i].includes("<django:green>")){
+                color = "style='color:green;'";
+            } else if(data[i].includes("<django:yellow>")){
+                color = "style='color:#d1d100;'";
+            } else if(data[i].includes("<django:red>")){
+                color = "style='color:red;'";
+            } else if(data[i].includes("<django:blue>")){
+                color = "style='color:blue;'";
+            } 
+
+            document.getElementById("logs").innerHTML += `
+                <p ${color}>${data[i]}</p>`;
+        }
+    }
+
     function execute_all() {
         status_tarefa();    
         setInterval(status_tarefa, 1000); // Atualiza a cada 5 segundos
+        
         lista_tarefas();
-        {% comment %} setInterval(lista_tarefas, 1000); // Atualiza a cada 5 segundos {% endcomment %}
+        setInterval(lista_tarefas, 1000); // Atualiza a cada 5 segundos
+        
+        logs();
+        setInterval(logs, 1000); // Atualiza a cada 5 segundos
     }
 
 execute_all()
