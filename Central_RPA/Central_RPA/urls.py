@@ -51,4 +51,5 @@ urlpatterns = [
     path('relatorios_pep/', include('relatorios_pep.urls')),
     path('Financeiro/', include('Financeiro.urls')),
     path('download', views.download_file_all, name='download'),
+    path('creditoImobiliario/', include('CreditoImobiliario.urls')),
 ]

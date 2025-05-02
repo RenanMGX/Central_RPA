@@ -1,0 +1,32 @@
+.filtros form{
+    /* border: 1px solid black; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;    
+    margin: 20px 0px;
+    background-color: cadetblue;
+    color: white;
+    border-radius: 5px;
+}
+
+.filtros form textarea{
+    color: black;
+    width: 700px; 
+    height: 85px
+}
+
+.filtros form input{
+    margin: 10px 0px;
+}
+
+.filtros_dentro{
+    background-color: teal;
+    color: white;
+    margin: 10px 0px;
+    padding: 0px 10px 10px 10px;
+    border-radius: 3px;
+}
+
+.filtros button{
+    margin: -10px 0px 40px 0px;
+}

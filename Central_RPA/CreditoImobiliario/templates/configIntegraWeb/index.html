@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Configurações IntegraWeb
+{% endblock %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/style.css' %}>
+<link rel="stylesheet" type="text/css" href={% static 'css/configVCRED.css' %}>
+
+
+<div class="conteudo">
+    {% if request.user.is_superuser %}
+    <div class="adm">
+        <p>--------------------Admin--------------------</p>
+        <h3>Admin</h3>
+        <form action="{% url 'admin_ConfigIntegraWeb' %}" method="POST" style="display: flex; flex-direction: column;">
+            {% csrf_token %}
+            <input type="text" name="caminho_imobmeExtract" value="{{ config_params }}" placeholder="Caminho Imopbme Extract">
+            <input type="submit" value="Atualizar">
+        </form>
+        <p>-------------------------------------------------</p>
+    </div>
+    {% endif %}
+
+    {% if valid %}
+        <div class="filtros" style="display: flex; flex-direction: column">
+            <div id="filtros_empreendimentos" class="filtros_dentro">
+                <h2>Filtros Planilha Empreendimentos:</h2>
+            </div>
+            <button onclick="testar_filtro('filtros_empreendimentos')" class="btn btn-warning"> Testar Filtro </button>
+            <div id="filtros_dadoscontrato" class="filtros_dentro">
+                <h2>Filtros Planilhas Dados de Contrato:</h2>
+            </div>
+            <button onclick="testar_filtro('filtros_empreendimentos')" class="btn btn-warning"> Testar Filtro </button>
+        </div>
+    {% else %}
+        <h2>Arquivos Json não encontrador no caminho "{{config_params}}"</h2>
+    {% endif %}
+
+</div>
+
+{% url 'testar_ConfigIntegraWeb'%}
+
+<script src={% static 'js/ConfigVCRED.js' %}></script>
+<script>
+    function get_filtro(tag) {        
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('GET', `{% url 'filtros_ConfigIntegraWeb' %}?tag=${tag}`, false);
+        xhr.send(null);
+
+        if (xhr.status == 200) {
+            let dados = {};
+            response = JSON.parse(xhr.responseText);
+            Object.entries(response).forEach(([key, value]) => {
+                dados[key] = value
+            })
+            return dados
+        }
+        
+        return {};
+    }
+    
+    function constuir_filtros(tag, id_element){
+        filtros = [get_filtro(tag)];
+        for (let i in filtros) {
+            Object.entries(filtros[i]).forEach(([key, value]) => {
+
+                corpo = `
+                <form action="{% url 'deletar_alterar_filtro_ConfigIntegraWeb' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="index" id="index" value="${key}">
+                            <input type="hidden" name="type" value="${value.type}">
+                            <input type="hidden" name="tag" value="${tag}">
+
+                `
+
+                if (value.type == 'columnsToRemove'){
+                    corpo += `
+                            <h3>Colunas para Remover</h3>
+                            <textarea name="columns" spellcheck="false">${value.columns}</textarea>
+                    `
+                } else if (value.type == 'columnsToKeep'){
+                    corpo += `
+                            <h3>Colunas para Manter</h3>
+                            <textarea name="columns" spellcheck="false">${value.columns}</textarea>
+                    `
+                
+                } else if (value.type == 'rowsToRemove'){
+                        corpo += `
+                                <h3>Linhas para Remover</h3>
+                                <p>Coluna: ${value.column}</p>
+                                <textarea name="value_in_rows" spellcheck="false">${value.value_in_rows}</textarea>
+                                <input type="hidden" name="column" value="${value.column}">
+                        `
+                } else if (value.type == 'rowsToKeep'){
+                        corpo += `
+                                <h3>Linhas para Manter</h3>
+                                <p>Coluna: ${value.column}</p>
+                                <textarea name="value_in_rows" spellcheck="false">${value.value_in_rows}</textarea>
+                                <input type="hidden" name="column" value="${value.column}">
+                        `
+                } else if (value.type == 'rowsToRemoveByInclude'){
+                        corpo += `
+                                <h3>${value.type}</h3>
+                                <p>Colunas: ${value.column}</p>
+                                <textarea name="value_in_rows" spellcheck="false">${value.value_in_rows}</textarea>
+                                <input type="hidden" name="column" value="${value.column}">
+                        `
+                }  
+                
+                corpo += `
+                        <input type="submit" value="Alterar" class="btn btn-primary">
+                        </form>
+                    <button class="btn btn-danger" style="margin: -110px 0px 0px 25px;" onclick="deletar_filtro('${tag}', '${key}')">Excluir</button><br>
+                ` 
+                document.getElementById(id_element).innerHTML += corpo
+
+            })
+        document.getElementById(id_element).innerHTML += `
+                    <button class="btn btn-success" id="btn_novo_${tag}" onclick="show_novo('${tag}')">Novo</button>
+                    <form action="{% url 'add_filtro_ConfigIntegraWeb' %}" method="POST" id="form_novo_${tag}" style="display:none">
+                        {% csrf_token %}
+                        <input type="hidden" name="tag" value="${tag}">
+                        <br>
+                        <label>Tipo:</label>
+                        <select name="type" onchange="onTipoChange(this.value, '${tag}')" style="color:black">
+                            <option value="columnsToRemove" >Colunas para Remover</option>
+                            <option value="columnsToKeep">Colunas para Manter</option>
+                            <option value="rowsToKeep">Linhas para Manter</option>
+                            <option value="rowsToRemove">Linhas para Remover</option>
+                            {% comment %} <option value="rowsToRemoveByInclude">Linhas para Remover que contenha o texto</option> {% endcomment %}
+                        </select>
+                        <br>
+
+                        <div id="colunas_${tag}">
+                            <label>Colunas:</label><br>
+                            <textarea name="columns" id="columns_${tag}" style="color:black"></textarea>
+                        </div>
+                        
+                        <div id="coluna_${tag}" style="display: none;">
+                            <label>Coluna:</label>
+                            <input type="text" name="column" id="column" style="color:black"><br>
+                            <label>Linhas:</label>
+                            <textarea name="value_in_rows" id="value_in_rows" style="color:black"></textarea>
+                        </div>
+
+                        <input type="submit" value="Adicionar" class="btn btn-primary">
+
+                    </form>
+                `
+        }
+
+    };
+
+    function onTipoChange(tipo, tag){
+        document.getElementById(`colunas_${tag}`).style.display = 'block'
+        document.getElementById(`coluna_${tag}`).style.display = 'none'
+        document.getElementById(`columns_${tag}`).value = ''
+        if (tipo == "rowsToKeep" || tipo == "rowsToRemove"){
+            document.getElementById(`colunas_${tag}`).style.display = 'none'
+            document.getElementById(`coluna_${tag}`).style.display = 'block'
+        }
+    }
+
+    function show_novo(tag){
+        console.log(`btn_novo_${tag}`)
+        document.getElementById(`btn_novo_${tag}`).style.display = 'none'
+        document.getElementById(`form_novo_${tag}`).style.display = 'flex'
+    }   
+    
+    function deletar_filtro(tag, index){
+        window.location.href = `{% url 'deletar_alterar_filtro_ConfigIntegraWeb' %}?tag=${tag}&index=${index}`
+    }
+
+    function testar_filtro(tag){
+        window.location.href = `{% url 'testar_ConfigIntegraWeb' %}?tag=${tag}`
+    }
+
+    constuir_filtros(tag='filtros_empreendimentos', id_element='filtros_empreendimentos')
+    constuir_filtros(tag='filtros_dadoscontrato', id_element='filtros_dadoscontrato')
+    
+    {% comment %} Object.entries(filtros_empreendimentos).forEach(([key, value]) => {
+        console.log(key, value)
+         = await get_filtro('filtros_empreendimentos')
+    }) {% endcomment %}
+
+
+</script>
+
+
+{% endblock %}

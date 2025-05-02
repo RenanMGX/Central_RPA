@@ -42,6 +42,7 @@ class Utils:
         except:
             raise Http404(f"rota '{name_route}' não encontrada")
     
+    @staticmethod
     def upfile(*, path:str, file:InMemoryUploadedFile, new_name:str=""):
         if not os.path.exists(path):
             os.makedirs(path)
@@ -56,7 +57,8 @@ class Utils:
                 _file.write(chunk)
         
         return path
-        
+    
+    @staticmethod   
     def download_file(file_path:str):
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:

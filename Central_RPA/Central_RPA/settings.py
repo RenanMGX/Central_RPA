@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'letrasRotinas',
     'consolidar_dados_multiplas_planilhas',
     'relatorios_pep',
-    'Financeiro'
+    'Financeiro',
+    'CreditoImobiliario'
 ]
 
 MIDDLEWARE = [

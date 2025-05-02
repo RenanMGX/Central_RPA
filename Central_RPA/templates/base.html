@@ -53,7 +53,11 @@
 
                 {% if 'tasks.financeiro_relatAberturaDesp' in request.user.get_all_permissions or request.user.is_superuser %}<li {% if request.path == '/Financeiro/index_relatAberturaDesp' %}class="active"{% endif %} >
                     <a href="{% url "index_relatAberturaDesp" %}">Relatorios Abertura de Despesas</a></li>{% endif %} 
-            
+                
+                {% if 'tasks.creditoImobiliario_configVCRED' in request.user.get_all_permissions or request.user.is_superuser %}<li {% if request.path == '/creditoImobiliario/ConfigIntegraWeb/' %}class="active"{% endif %} >
+                    <a href="{% url "index_ConfigIntegraWeb" %}">Filtros VCRED</a></li>{% endif %} 
+                
+                        
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="bt_logout"><a href="{% url 'logout' %}">logout</a></li>
