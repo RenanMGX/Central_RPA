@@ -176,7 +176,7 @@ def delete_alterar_filtro_ConfigIntegraWeb(request: WSGIRequest):
 @permission_required(CONFIG_VCRED_PERMISSIONS, raise_exception=True)
 def testar_filtro_ConfigIntegraWeb(request: WSGIRequest):
     path = str(config_params.caminho_imobmeExtract)
-    file_py = os.path.join(path, 'IntegraçãoWEB_DJANGO.py')
+    file_py = os.path.join(path, 'IntegracaoWEB_DJANGO.py')
     executable_path = os.path.join(path, 'venv', 'Scripts', 'python.exe')
     
     tag = request.GET.get('tag')
