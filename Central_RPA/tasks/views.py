@@ -32,7 +32,7 @@ class ValidNewTasks:
         self.atualizar()
         
     def atualizar(self):
-        self.__lista = NewTasks.listar_tarefas(['Automações'])
+        self.__lista = NewTasks.listar_tarefas(['Automações', 'Rotinas'])
         
 new_tasks = "ValidNewTasks()"
 
