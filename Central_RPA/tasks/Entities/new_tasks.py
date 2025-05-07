@@ -155,4 +155,4 @@ class NewTasks:
         return "Tarefa não pode ser parada"
                     
 if __name__ == "__main__":
-    tasks = NewTasks.listar_tarefas(['Automações'])
+    tasks = NewTasks.listar_tarefas(['Automações', 'Rotinas'])
