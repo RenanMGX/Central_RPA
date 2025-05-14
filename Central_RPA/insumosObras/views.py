@@ -8,6 +8,7 @@ from Central_RPA.utils import Utils
 from typing import List
 import openpyxl
 from tasks.Entities.new_tasks import NewTasks
+from datetime import datetime
 
 #task = NewTasks(value=r"Nome da tarefa: Automações\Qualidade\InsumosObra", pasta=r".Automações\Qualidade")
 
@@ -73,14 +74,33 @@ def listar_arquivos(path):
         result[file] = os.path.normpath(os.path.join(path, file))
     return result
 
+
+def listar_arquivo_completo(path):
+    path = os.path.join(TargetPath.path() ,path)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    result = {}
+    for file in os.listdir(path):
+        file = os.path.normpath(os.path.join(path, file))
+        result["name"] = os.path.basename(file)
+        result["data"] = datetime.fromtimestamp(os.path.getmtime(file)).strftime('%d/%m/%Y %H:%M:%S')
+        result["tamanho"] = str(round(os.path.getsize(file) / 1024, 2)) + " KB"
+        result["path"] = file
+        
+    return result
+
+
+
 @login_required
 @permission_required('tasks.insumosObras', raise_exception=True)
 def index(request:WSGIRequest):
+    print(listar_arquivos('patrimar'))
     content = {
         'patrimarFiles' : listar_arquivos('patrimar'),
         'novolarFiles': listar_arquivos('novolar'),
-        'convert': listar_arquivos('convert'),
-        'finalPath': listar_arquivos('final'),
+        'convert': listar_arquivo_completo('convert'),
+        'finalPath': listar_arquivo_completo('final'),
         'targetPath': TargetPath.path().replace(TargetPath.sub_path, ''),
         'nome_da_tarefa': TargetPath.nome_da_tarefa(),
         'pasta': TargetPath.pasta()

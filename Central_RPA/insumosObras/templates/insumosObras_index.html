@@ -35,11 +35,25 @@ Insumos Obras
         <h2>Área de Automação para Insumos de Obras</h2>
         <p>Clique para atualizar a Planilha Base</p>
 
-        <div id="fileFinal_download">
-            {% for key, value in finalPath.items %}
-                <h3><a target="_blank"
-                        href="{% url 'insumosObras_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
-            {% endfor %}
+        <table class="table" style="background-color: honeydew; border-radius: 15px;">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Tamanho</th>
+                </tr>
+            </thead>
+            <tbody id="fileFinal_download">
+                <tr>
+                    <td><h3><a target="_blank" href="{% url 'insumosObras_download' %}?path={{ finalPath.path }}"><strong>{{ finalPath.name }}</strong></a></h3></td>
+                    <td><h3>{{ finalPath.data }}</h3></td>
+                    <td><h3>{{ finalPath.tamanho }}</h3></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
         </div>
         <div id="bt_atualizar" style="width:100%;display:flex;justify-content: center"></div>
         {% comment %} <button class="btn btn-success" onclick="atualizar()">Atualizar</button> {% endcomment %}
@@ -50,10 +64,29 @@ Insumos Obras
             <p>1. O arquivo deve ser um 'xls', 'xlsx', 'xlsm'</p>
             <p>2. O arquivo deve conter as colunas: "TxtBreveMaterial", "UM", "PARÂMETRO", "FINALIDADE 1" , "FATOR DE CONVERSÃO"</p>
             <p>3. O arquivo deve conter a aba "CONVERSÃO MATERIAIS APLIC."</p>
-            {% for key, value in convert.items %}
-            <h3><a target="_blank"
-                    href="{% url 'insumosObras_download' %}?path={{ value }}"><strong>{{ key }}</strong></a></h3>
-            {% endfor %}
+
+
+        <table class="table" style="background-color: honeydew; border-radius: 15px;">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Tamanho</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><h3><a target="_blank" href="{% url 'insumosObras_download' %}?path={{ convert.path }}"><strong>{{ convert.name }}</strong></a></h3></td>
+                    <td><h3>{{ convert.data }}</h3></td>
+                    <td><h3>{{ convert.tamanho }}</h3></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+
+
             <form action="{% url 'insumosObras_create' folder='convert' %}" method="POST" onsubmit="return enviar('file_conver')"
                 enctype="multipart/form-data" id="formulario_conver">
                 {% csrf_token %}
