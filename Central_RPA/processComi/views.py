@@ -56,11 +56,17 @@ def status(request: WSGIRequest):
 @login_required()
 @permission_required('tasks.processComi', raise_exception=True)
 def list_files(request: WSGIRequest):
-    result = {}
+    result = []
     for file in Preparar.verificar_pasta():
-        result[os.path.basename(file)] = file
+        result.append({
+            "name": os.path.basename(file),
+            "data": datetime.fromtimestamp(os.path.getmtime(file)).strftime('%d/%m/%Y %H:%M:%S'),
+            "tamanho": str(round(os.path.getsize(file) / 1024, 2)) + " KB",
+            "path": file
+            
+        })
 
-    return JsonResponse(result)
+    return JsonResponse(result, safe=False)
 
 @login_required()
 @permission_required('tasks.processComi', raise_exception=True)

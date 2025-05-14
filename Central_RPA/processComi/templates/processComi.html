@@ -37,7 +37,10 @@ Visualizar Tela
   <table class="table">
     <thead class="table-success">
       <tr>
-        <th>Arquivos Batch Input</th>
+        <th>Nome</th>
+        <th>Data</th>
+        <th>Tamanho</th>
+        <th>Download</th>
       </tr>
     </thead>
 
@@ -73,14 +76,19 @@ async function list_files(){
   
   var lista_arquivos = ""
   
+  console.log(data)
+
   for (let key in data){
       lista_arquivos += "<tr>";
       //lista_arquivos += "<td>" + key + "</td>";
-      lista_arquivos += "<td><a href=\"{% url 'processComi_download' %}?path=" + data[key] + "\"> " + key + "</a></td>";
+      
+      lista_arquivos += `<td>${data[key].name}</td>`;
+      lista_arquivos += `<td>${data[key].data}</td>`;
+      lista_arquivos += `<td>${data[key].tamanho}</td>`;
+      lista_arquivos += "<td><a href=\"{% url 'processComi_download' %}?path=" + data[key].path + "\"> " + "Download" + "</a></td>";
       lista_arquivos += "</tr>";
-  }
+  } 
   
-  console.log(lista_arquivos)
   document.getElementById("lista_files").innerHTML = lista_arquivos;
 
           
