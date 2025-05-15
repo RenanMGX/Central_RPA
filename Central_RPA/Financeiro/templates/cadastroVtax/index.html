@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Cadastro Vtax
+{% endblock %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/cadrastroVtax.css' %}>
+
+<div class="conteudo">
+    {% if request.user.is_superuser %}
+    <div class="adm">
+        <h3>Admin</h3>
+        <form action="{% url 'adminConfig_cadastrarVtax' %}" method="POST" style="display: flex; flex-direction: column;">
+            {% csrf_token %}
+            <input type="text" name="nome_tarefa_cadastroVtax" value="{{ nome_tarefa_cadastroVtax }}" placeholder="Nome da Tarefa">
+            <input type="text" name="caminho_tarefa_cadastroVtax" value="{{ caminho_tarefa_cadastroVtax }}" placeholder="Caminho da Tarefa">
+            <input type="submit" value="Atualizar">
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="titulo">
+        <h1>Cadastro Vtax</h1>
+    </div>
+
+    <div cllass="formulario">
+        formulario
+    </div>
+
+    <div class="logs">
+        logs
+    </div>
+
+
+
+
+</div>
+
+{% endblock %}

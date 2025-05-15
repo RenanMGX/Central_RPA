@@ -20,7 +20,7 @@ def test(request:WSGIRequest):
 
 ########### Relatorio Abertura Despesas ###########
 
-class Config:
+class Config_relatAberturaDesp:
     @property
     def nome_tarefa(self):
         self.__atualizar()
@@ -50,7 +50,7 @@ class Config:
     def set_value(self, tag:Literal['nome_tarefa', 'caminho_tarefa'], value:str):
         models.FinanceiroConfig.objects.filter(nome=tag).update(valor=value)
 
-config_relatAberturaDesp = Config()
+config_relatAberturaDesp = Config_relatAberturaDesp()
 
 @login_required
 @Utils.superUser_required
@@ -99,11 +99,12 @@ def upFiles_relatAberturaDesp(request:WSGIRequest):
         lista_files = ['desp_adm', 'desp_comercial','outras_despesas']
         mensagem = "Retorno do envio:\n\n"
         
-        date:datetime = datetime.strptime(request.POST.get('date'), "%Y-%m-%d")
+        
+        date:datetime = datetime.strptime(request.POST.get('date'), "%Y-%m-%d") #type: ignore
         
         files_to_execute = {"files_path": {}, "date": date.isoformat()}
         
-        path_file = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'files')
+        path_file = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'files')#type: ignore
         for file in os.listdir(path_file):
             file = os.path.join(path_file, file)
             os.unlink(file)
@@ -112,17 +113,17 @@ def upFiles_relatAberturaDesp(request:WSGIRequest):
             file = request.FILES.get(file_key)
             if file:
                 if file.name.lower().endswith(('.xlsx', '.xls', 'xlsm')):
-                    path_file_final = Utils.upfile(path=path_file, file=file)
+                    path_file_final = Utils.upfile(path=path_file, file=file)#type: ignore
                     files_to_execute["files_path"][file_key] = path_file_final
                     mensagem += f"Arquivo '{file.name}' enviado com sucesso\n\n"
                 else:
                     mensagem += f"Arquivo '{file.name}' não é um arquivo Excel\n\n"
                     continue
         
-        date = request.POST.get('date')
+        date = request.POST.get('date')#type: ignore
                
         if files_to_execute["files_path"]:
-            path_json = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'json')
+            path_json = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'json')#type: ignore
             path_json = os.path.join(path_json, 'args.json')
             with open(path_json, 'w', encoding='utf-8') as _file:
                 json.dump(files_to_execute, _file)
@@ -156,7 +157,7 @@ def tarefa_status_relatAberturaDesp(request: WSGIRequest):
 def lista_files_relatAberturaDesp(request: WSGIRequest):
     if request.method == "GET":
         _lista_files = []
-        path_file = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'files')
+        path_file = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'files')#type: ignore
         if os.path.exists(path_file):
             for file in os.listdir(path_file):
                 file = os.path.join(path_file, file)
@@ -177,7 +178,7 @@ def lista_files_relatAberturaDesp(request: WSGIRequest):
 @permission_required('tasks.financeiro_relatAberturaDesp', raise_exception=True)
 def log_relatAberturaDesp(request: WSGIRequest):
     if request.method == "GET":
-        path_log = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'json', 'informativo.json')
+        path_log = os.path.join(config_relatAberturaDesp.caminho_tarefa, 'json', 'informativo.json')#type: ignore
         if os.path.exists(path_log):
             with open(path_log, 'r', encoding='utf-8') as _file:
                 lista:list = json.load(_file)
@@ -188,4 +189,81 @@ def log_relatAberturaDesp(request: WSGIRequest):
         
     return JsonResponse([], safe=False)
 
-##################################################
+###################################################
+
+########### Relatorio Abertura Despesas ###########
+
+class Config_cadastroVtax:
+    @property
+    def nome_tarefa_cadastroVtax(self):
+        self.__atualizar()
+        return self.__nome_tarefa_cadastroVtax
+    
+    @property
+    def caminho_tarefa_cadastroVtax(self):   
+        self.__atualizar()
+        return self.__caminho_tarefa_cadastroVtax
+    
+    def __init__(self):
+        pass
+    
+    def __atualizar(self):
+        try:
+            self.__nome_tarefa_cadastroVtax = models.FinanceiroConfig.objects.get(nome='nome_tarefa_cadastroVtax').valor
+        except:
+            models.FinanceiroConfig.objects.create(nome='nome_tarefa_cadastroVtax', valor='')
+            self.__nome_tarefa_cadastroVtax = models.FinanceiroConfig.objects.get(nome='nome_tarefa_cadastroVtax').valor
+            
+        try:
+            self.__caminho_tarefa_cadastroVtax = models.FinanceiroConfig.objects.get(nome='caminho_tarefa_cadastroVtax').valor
+        except:
+            models.FinanceiroConfig.objects.create(nome='caminho_tarefa_cadastroVtax', valor='')
+            self.__caminho_tarefa_cadastroVtax = models.FinanceiroConfig.objects.get(nome='caminho_tarefa_cadastroVtax').valor
+            
+    def set_value(self, tag:Literal['nome_tarefa_cadastroVtax', 'caminho_tarefa_cadastroVtax'], value:str):
+        models.FinanceiroConfig.objects.filter(nome=tag).update(valor=value)
+
+config_cadastroVtax = Config_cadastroVtax()
+
+
+    
+@login_required
+@Utils.superUser_required
+def adminConfig_cadastroVtax(request: WSGIRequest):
+    if request.method == "POST":
+        mensagem = "Retorno do envio:\n\n"
+        
+        nome_tarefa = 'nome_tarefa_cadastroVtax'
+        value = request.POST.get(nome_tarefa)
+        if value:
+            config_cadastroVtax.set_value(tag=nome_tarefa, value=value)
+            mensagem += f"Nome da tarefa atualizado para '{value}'\n\n"
+        else:
+            mensagem += f"Nome da tarefa não foi atualizado\n\n"
+        
+        caminho_tarefa = 'caminho_tarefa_cadastroVtax'
+        value = request.POST.get(caminho_tarefa)
+        if (value) and os.path.exists(value):
+            config_cadastroVtax.set_value(tag=caminho_tarefa, value=value)
+            mensagem += f"Caminho da tarefa atualizado para '{value}'\n\n"
+        else:
+            mensagem += f"Caminho da tarefa não foi atualizado\n\n"
+
+        mensagem += f"Finalizado!\n\n"
+        
+        return Utils.message_retorno(request, text=mensagem, name_route='index_cadastrarVtax')
+    
+    return redirect('index_cadastrarVtax')
+    
+    
+    
+def index_cadastrarVtax(request: WSGIRequest):
+    content = {
+        "teste": "testado",
+        "nome_tarefa_cadastroVtax": config_cadastroVtax.nome_tarefa_cadastroVtax,
+        "caminho_tarefa_cadastroVtax": config_cadastroVtax.caminho_tarefa_cadastroVtax,
+    }
+    return render(request, 'cadastroVtax/index.html', content)
+
+
+###################################################
