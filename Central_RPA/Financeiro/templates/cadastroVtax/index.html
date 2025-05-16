@@ -33,6 +33,40 @@
         <div class="campo_exibir_add" id="campo_exibir_add">
             <!-- aqui sera preenchido por uma função no javascript -->
         </div>
+        <div class="start">
+            <!-- <button class="btn btn-success" id="startBtn" onclick="start()">Iniciar</button> -->
+            <form action="{% url 'start_cadastrarVtax' %}" method="POST" onsubmit="return enviar()">
+                {% csrf_token %}
+                <input type="hidden" name="empresas" id="empresas" value="">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cadastro_grupos_empresas_reinf", name="cadastro_grupos_empresas_reinf" checked>
+                    <label class="form-check-label" for="meuCheckbox">
+                        Cadastro Grupos Empresas reinf
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"  id="cadastro_representantes", name="cadastro_representantes" checked>
+                    <label class="form-check-label" for="meuCheckbox">
+                        Cadastro Representantes
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"  id="cadastro_codigos_impostos", name="cadastro_codigos_impostos" checked>
+                    <label class="form-check-label" for="meuCheckbox">
+                        Cadastro Codigos Impostos
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"  id="cadastro_codigo_servicos", name="cadastro_codigo_servicos" checked>
+                    <label class="form-check-label" for="meuCheckbox">
+                        Cadastro Codigo Servicos
+                    </label>
+                </div>
+                
+                <button class="btn btn-success" id="startBtn" onclick="start()">Iniciar</button>
+                
+            </form>
+        </div>
     </div>
 
     <div class="logs">
@@ -41,7 +75,7 @@
 
 
 
-<button class="btn btn-warning" onclick="remover_empresa(1)">Teste</button>
+<button class="btn btn-warning" onclick="enviar()">Teste</button>
 <script src={% static 'js/cadrastroVtax.js' %}></script>
 <script>
 all_empresas = new Empresas();
@@ -72,6 +106,24 @@ function remover_empresa(id){
     show_empresas();
 }
 
+function start(){
+    let empresas_to_send = [];
+    for (const [key, value] of Object.entries(all_empresas.get_empresas())) {
+        empresas_to_send.push(value);
+    }
+    window.location.href = "{% url 'start_cadastrarVtax' %}?empresas=" + empresas_to_send;
+    
+}
+
+function enviar(){
+    let empresas_to_send = [];
+    for (const [key, value] of Object.entries(all_empresas.get_empresas())) {
+        empresas_to_send.push(value);
+    }
+
+    document.getElementById('empresas').value = empresas_to_send;
+    return confirm("Deseja realmente iniciar o cadastro das empresas?");
+}
 
 show_empresas();
 

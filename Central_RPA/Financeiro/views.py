@@ -10,6 +10,7 @@ import json
 from tasks.views import TarefasValidas
 import shutil
 from dateutil.relativedelta import relativedelta
+import json
 
 tarefas = TarefasValidas()
 
@@ -256,7 +257,8 @@ def adminConfig_cadastroVtax(request: WSGIRequest):
     return redirect('index_cadastrarVtax')
     
     
-    
+@login_required
+@permission_required('tasks.cadastrarVtax', raise_exception=True)
 def index_cadastrarVtax(request: WSGIRequest):
     content = {
         "teste": "testado",
@@ -265,5 +267,53 @@ def index_cadastrarVtax(request: WSGIRequest):
     }
     return render(request, 'cadastroVtax/index.html', content)
 
+@login_required
+@permission_required('tasks.cadastrarVtax', raise_exception=True)
+def start_cadastrarVtax(request: WSGIRequest):
+    if request.method == "POST":
+        empresas = request.POST.get("empresas")
+        print(request.POST)
+        if empresas:
+            empresas = empresas.split(",")
+            cadastro_grupos_empresas_reinf = True if request.POST.get("cadastro_grupos_empresas_reinf") else False
+            cadastro_representantes = True if request.POST.get("cadastro_representantes") else False
+            cadastro_codigos_impostos = True if request.POST.get("cadastro_codigos_impostos") else False
+            cadastro_codigo_servicos = True if request.POST.get("cadastro_codigo_servicos") else False
+            
+            param = {
+                "empresas": empresas,
+                "cadastro_grupos_empresas_reinf": cadastro_grupos_empresas_reinf,
+                "cadastro_representantes": cadastro_representantes,
+                "cadastro_codigos_impostos": cadastro_codigos_impostos,
+                "cadastro_codigo_servicos": cadastro_codigo_servicos,
+            } 
+            
+            if not (config_cadastroVtax.caminho_tarefa_cadastroVtax):
+                return Utils.message_retorno(request, text="Caminho da tarefa não configurado", name_route='index_cadastrarVtax')
+            
+            path = os.path.join(config_cadastroVtax.caminho_tarefa_cadastroVtax, 'json', 'param.json')
+            if not os.path.exists(os.path.dirname(path)):
+                return Utils.message_retorno(request, text="Caminho da tarefa não configurado", name_route='index_cadastrarVtax')
+            with open(path, 'w') as _file:
+                json.dump(param, _file, indent=4)
+                
+            for tarefa in tarefas.listar_tarefas():
+                if tarefa.nome == config_cadastroVtax.nome_tarefa_cadastroVtax:
+                    tarefa.executar()
+        else:
+            return Utils.message_retorno(request, text="Nenhuma empresa selecionada", name_route='index_cadastrarVtax')
+    
+    return redirect('index_cadastrarVtax')
 
+
+@login_required
+@permission_required('tasks.cadastrarVtax', raise_exception=True)
+def retorno_cadastrarVtax(request: WSGIRequest):
+    if request.method == "GET":
+        if (mod:=request.GET.get("mod")):
+            if mod == "status_automação":
+                print("status_automação")
+        
+        
+    return JsonResponse({'status': 'ok', 'message': 'Test endpoint is working!'})
 ###################################################

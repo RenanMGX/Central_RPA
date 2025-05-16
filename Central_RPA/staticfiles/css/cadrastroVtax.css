@@ -9,6 +9,11 @@
     align-items: center;
 }
 
+.formulario form {
+    display: flex;
+    flex-direction: column;
+}
+
 .campo_exibir_add {
     display: flex;
     flex-direction: row;
