@@ -25,14 +25,58 @@
         <h1>Cadastro Vtax</h1>
     </div>
 
-    <div cllass="formulario">
-        formulario
+    <div class="formulario">
+        <div class="add">
+            <input type="text" name="add_empresa" id="add_empresa" placeholder="Empresa">
+            <button class="btn btn-primary" id="addBtn" onclick="add_empresa()">Adicionar</button>
+        </div>
+        <div class="campo_exibir_add" id="campo_exibir_add">
+            <!-- aqui sera preenchido por uma função no javascript -->
+        </div>
     </div>
 
     <div class="logs">
-        logs
+        Logs
     </div>
 
+
+
+<button class="btn btn-warning" onclick="remover_empresa(1)">Teste</button>
+<script src={% static 'js/cadrastroVtax.js' %}></script>
+<script>
+all_empresas = new Empresas();
+
+all_empresas.add_empresa('N041');
+all_empresas.add_empresa('N042');
+
+function show_empresas(){
+    empresas_views = "";
+    
+    for (const [key, value] of Object.entries(all_empresas.get_empresas())) {
+        empresas_views += `<div class="empresa">${value}<span class="cancel_empresa" onclick="remover_empresa(${key})">x</span></div>`;
+    }
+    document.getElementById('campo_exibir_add').innerHTML = "";
+    document.getElementById('campo_exibir_add').innerHTML += empresas_views;
+}
+
+function add_empresa(){
+    let empresa = document.getElementById('add_empresa').value;
+    if(empresa != ''){
+        all_empresas.add_empresa(empresa.toUpperCase())
+    }
+    show_empresas();
+};
+
+function remover_empresa(id){
+    all_empresas.remover_empresa_per_id(id);
+    show_empresas();
+}
+
+
+show_empresas();
+
+
+</script>
 
 
 

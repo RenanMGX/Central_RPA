@@ -1,0 +1,37 @@
+.formulario {
+    background-color: beige;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.campo_exibir_add {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-content: center;
+    justify-content: center;
+}
+
+.empresa {
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.cancel_empresa {
+    margin: 1px 0px 0px 7px;
+    background-color: darkred;
+    padding: 1px 5px;
+    border-radius: 20px;
+}
+.cancel_empresa:hover {
+    background-color: red;
+    cursor: pointer;
+}

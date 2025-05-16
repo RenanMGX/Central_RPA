@@ -11,5 +11,6 @@
     flex-direction: column;
     flex-wrap: nowrap;
     align-items: center;
+    gap: 20px
     /* border: 1px solid black; */
 }
