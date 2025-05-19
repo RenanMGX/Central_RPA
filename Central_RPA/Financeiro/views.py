@@ -323,6 +323,7 @@ def retorno_cadastrarVtax(request: WSGIRequest):
                 if os.path.exists(path):
                     with open(path, 'r', encoding='utf-8') as _file:
                         logs = json.load(_file)
+                        logs.reverse()
                         return JsonResponse(logs, safe=False)
         
         
