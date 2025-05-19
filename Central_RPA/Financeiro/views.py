@@ -293,7 +293,7 @@ def start_cadastrarVtax(request: WSGIRequest):
             
             path = os.path.join(config_cadastroVtax.caminho_tarefa_cadastroVtax, 'json', 'param.json')
             if not os.path.exists(os.path.dirname(path)):
-                return Utils.message_retorno(request, text="Caminho da tarefa não configurado", name_route='index_cadastrarVtax')
+                return Utils.message_retorno(request, text="Caminho da tarefa não encontrado", name_route='index_cadastrarVtax')
             with open(path, 'w') as _file:
                 json.dump(param, _file, indent=4)
                 
