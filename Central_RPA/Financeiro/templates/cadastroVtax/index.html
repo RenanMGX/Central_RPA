@@ -23,9 +23,12 @@
 
     <div class="titulo">
         <h1>Cadastro Vtax</h1>
+        <p>Este script automatiza o cadastro de informações fiscais no SAP VTax,</P>
+        <p> incluindo grupos de empresas, representantes, códigos de impostos e códigos de serviços. </p>
+        <p>Ao final, garante que todos os dados necessários estejam corretamente registrados no sistema, agilizando processos e reduzindo erros manuais.</p>
     </div>
 
-    <div class="formulario">
+    <div class="formulario" id="formulario_for_exec" style="display:None">
         <div class="add">
             <input type="text" name="add_empresa" id="add_empresa" placeholder="Empresa">
             <button class="btn btn-primary" id="addBtn" onclick="add_empresa()">Adicionar</button>
@@ -68,8 +71,13 @@
             </form>
         </div>
     </div>
-
-    <div class="logs">
+    <div class="formulario" id="formulario_exec" style="display:None">
+        <h1>Em Execução</h1>
+    </div>
+    <div class="formulario" id="formulario_deactivate" style="display:None">
+        <h1>Desativado</h1>
+    </div>
+    <div class="logs" id="logs">
         Logs
     </div>
 
@@ -77,6 +85,7 @@
 
 <button class="btn btn-warning" onclick="enviar()">Teste</button>
 <script src={% static 'js/cadrastroVtax.js' %}></script>
+<script src={% static 'js/all_pages.js' %}></script>
 <script>
 all_empresas = new Empresas();
 
@@ -125,7 +134,44 @@ function enviar(){
     return confirm("Deseja realmente iniciar o cadastro das empresas?");
 }
 
+async function autoStatus(){
+    let response = await fetch('{% url 'retorno_cadastrarVtax' %}?mod=status_automação');
+    let data = await response.json();
+
+    if(data.status == 'Pronto'){
+        document.getElementById('formulario_exec').style.display = "none";
+        document.getElementById('formulario_for_exec').style.display = "flex";
+        document.getElementById('formulario_deactivate').style.display = "none";
+    } else if(data.status == 'Em execu\u00e7\u00e3o'){
+        document.getElementById('formulario_exec').style.display = "flex";
+        document.getElementById('formulario_for_exec').style.display = "none";
+        document.getElementById('formulario_deactivate').style.display = "none";
+    } else {
+        document.getElementById('formulario_exec').style.display = "none";
+        document.getElementById('formulario_for_exec').style.display = "none";
+        document.getElementById('formulario_deactivate').style.display = "flex";
+    }
+}
+
+async function logs(){
+    let response = await fetch('{% url 'retorno_cadastrarVtax' %}?mod=logs');
+    let data = await response.json();
+    log = "";
+    
+    for (let line of data){
+        log += `<p style="${identifyColor(line)}">${line}</p>`;
+    }
+
+    document.getElementById('logs').innerHTML = log;
+    console.log(log);
+
+}
+
+autoStatus();
+logs();
 show_empresas();
+setInterval(autoStatus, 1000);
+setInterval(logs, 1000);
 
 
 </script>

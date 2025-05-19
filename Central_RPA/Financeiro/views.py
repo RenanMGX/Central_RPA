@@ -310,9 +310,21 @@ def start_cadastrarVtax(request: WSGIRequest):
 @permission_required('tasks.cadastrarVtax', raise_exception=True)
 def retorno_cadastrarVtax(request: WSGIRequest):
     if request.method == "GET":
+        #print(request.GET)
         if (mod:=request.GET.get("mod")):
             if mod == "status_automação":
-                print("status_automação")
+                for tarefa in tarefas.listar_tarefas():
+                    if tarefa.nome == config_cadastroVtax.nome_tarefa_cadastroVtax:
+                        status = tarefa.status()
+                        return JsonResponse({'status': status})
+            
+            elif mod == "logs":
+                path = os.path.join(str(config_cadastroVtax.caminho_tarefa_cadastroVtax), 'json', 'informativo.json')
+                if os.path.exists(path):
+                    with open(path, 'r', encoding='utf-8') as _file:
+                        logs = json.load(_file)
+                        return JsonResponse(logs, safe=False)
+        
         
         
     return JsonResponse({'status': 'ok', 'message': 'Test endpoint is working!'})

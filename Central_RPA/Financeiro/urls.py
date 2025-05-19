@@ -12,4 +12,5 @@ urlpatterns = [
     path('index_cadastrarVtax', views.index_cadastrarVtax, name='index_cadastrarVtax'),
     path('adminConfig_cadastrarVtax', views.adminConfig_cadastroVtax, name='adminConfig_cadastrarVtax'),
     path('start_cadastrarVtax', views.start_cadastrarVtax, name='start_cadastrarVtax'),
+    path('retorno_cadastrarVtax', views.retorno_cadastrarVtax, name='retorno_cadastrarVtax'),
 ]

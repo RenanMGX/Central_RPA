@@ -40,3 +40,15 @@
     background-color: red;
     cursor: pointer;
 }
+
+.logs {
+    background-color: black;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.titulo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
