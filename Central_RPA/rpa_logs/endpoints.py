@@ -67,7 +67,7 @@ def registro_path(request: WSGIRequest):
                 except Exception as e:
                     pass
         
-        print(dados_request)
+        #print(dados_request)
         form = forms.RegistroForm(dados_request)
         if form.is_valid():
             form.save()
