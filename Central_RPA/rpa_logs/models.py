@@ -16,6 +16,7 @@ class registro(models.Model):
     horario = models.DateTimeField()
     descricao = models.TextField(blank=True, null=True)
     exception = models.TextField(blank=True, null=True)
+    ia_analise = models.TextField(blank=True, null=True)
     
     def __str__(self) -> str:
         return self.nome_rpa

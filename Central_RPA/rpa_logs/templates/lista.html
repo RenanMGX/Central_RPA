@@ -20,6 +20,7 @@ Lista de Registro
           <th>horario</th>
           <th>descricao</th>
           <th>exception</th>
+          <th>Analise IA</th>
         </tr>
       </thead>
       <tbody>
@@ -36,7 +37,8 @@ Lista de Registro
             {% if item.exception and  item.exception != 'NoneType: None <br>' %}
             <button type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo_{{item.id}}">Mostrar Error</button>
             <div id="demo_{{item.id}}" class="collapse">
-            <p>{{ item.exception }}</p>
+              <p>{{ item.exception }}</p>
+          <td>{{item.ia_analise}}</td>
           </div>
           {% endif %}
           
