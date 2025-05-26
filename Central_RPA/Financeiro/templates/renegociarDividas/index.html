@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Renegociação de Dívidas
+{% endblock %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href={% static 'css/cadrastroVtax.css' %}>
+<link rel="stylesheet" type="text/css" href={% static 'css/relatAberturaDesp.css' %}>
+
+<div class="conteudo">
+    {% if request.user.is_superuser %}
+    <div class="adm">
+        <h3>Admin</h3>
+        <form action="{% url 'adminConfig_renegociarDividas' %}" method="POST" style="display: flex; flex-direction: column;">
+            {% csrf_token %}
+            <input type="text" name="nome_tarefa_renegociarDividas" value="{{ nome_tarefa }}" placeholder="Nome da Tarefa">
+            <input type="text" name="caminho_tarefa_renegociarDividas" value="{{ caminho_tarefa }}" placeholder="Caminho da Tarefa">
+            <input type="submit" value="Atualizar">
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="titulo">
+        <h1>Renegociação de Dívidas</h1>
+        
+    </div>
+
+    <div class="formularios">
+        <form class="form-horizontal" action="{% url 'upFiles_renegociarDividas' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>Relatorio Kitei</h3>
+
+            
+            <div class="formulario-file">
+                {% comment %} <label >Outras Dispesas: </label> {% endcomment %}
+                <input type="file" name="relatorio_kitei">
+            </div>
+            
+            
+            <div class="formulario-submit">
+                {% comment %} <label class="control-label col-sm-1"></label> {% endcomment %}
+                <button type="submit" class="btn btn-success btn-block" value="Enviar" style="display:None"   id="bt_iniciar">Iniciar</button>
+                <button type="submit" class="btn btn-danger btn-block" value="Executando"  id="bt_executando" style="display:None" disabled>Executando</button>
+            </div>
+        
+           
+        </form>
+    </div>
+    
+    <div class="retorno">
+        Retorno
+    </div>
+
+    <div class="logs">
+        Log 
+    </div>
+
+
+
+</div>
+
+<script>
+
+async function status_tarefa() {
+    const response = await fetch("{% url 'status_renegociarDividas' %}?mod=status_automação");
+    const data = await response.json();
+
+    console.log(data.status)
+    if (data.status === 'Em execução') {
+        document.getElementById('bt_iniciar').style.display = 'none';
+        document.getElementById('bt_executando').style.display = 'block';
+    } else if (data.status === 'Pronto'){
+        document.getElementById('bt_iniciar').style.display = 'block';
+        document.getElementById('bt_executando').style.display = 'none';
+    }
+
+
+}
+
+
+status_tarefa()
+
+</script>
+
+{% endblock %}

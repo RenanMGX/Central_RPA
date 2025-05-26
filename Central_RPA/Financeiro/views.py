@@ -330,3 +330,132 @@ def retorno_cadastrarVtax(request: WSGIRequest):
         
     return JsonResponse({'status': 'ok', 'message': 'Test endpoint is working!'})
 ###################################################
+
+############# Renegociação de Dividas #############
+
+class Config_renegociarDividas:
+    @property
+    def nome_tarefa_renegociarDividas(self):
+        self.__atualizar()
+        return self.__nome_tarefa_renegociarDividas
+    
+    @property
+    def caminho_tarefa_renegociarDividas(self):   
+        self.__atualizar()
+        return self.__caminho_tarefa_renegociarDividas
+    
+    def __init__(self):
+        pass
+    
+    def __atualizar(self):
+        try:
+            self.__nome_tarefa_renegociarDividas = models.FinanceiroConfig.objects.get(nome='nome_tarefa_renegociarDividas').valor
+        except:
+            models.FinanceiroConfig.objects.create(nome='nome_tarefa_renegociarDividas', valor='')
+            self.__nome_tarefa_renegociarDividas = models.FinanceiroConfig.objects.get(nome='nome_tarefa_renegociarDividas').valor
+            
+        try:
+            self.__caminho_tarefa_renegociarDividas = models.FinanceiroConfig.objects.get(nome='caminho_tarefa_renegociarDividas').valor
+        except:
+            models.FinanceiroConfig.objects.create(nome='caminho_tarefa_renegociarDividas', valor='')
+            self.__caminho_tarefa_renegociarDividas = models.FinanceiroConfig.objects.get(nome='caminho_tarefa_renegociarDividas').valor
+            
+    def set_value(self, tag:Literal['nome_tarefa_renegociarDividas', 'caminho_tarefa_renegociarDividas'], value:str):
+        models.FinanceiroConfig.objects.filter(nome=tag).update(valor=value)
+
+config_renegociarDividas = Config_renegociarDividas()
+
+
+    
+@login_required
+@Utils.superUser_required
+def adminConfig_renegociarDividas(request: WSGIRequest):
+    if request.method == "POST":
+        mensagem = "Retorno do envio:\n\n"
+        
+        nome_tarefa = 'nome_tarefa_renegociarDividas'
+        value = request.POST.get(nome_tarefa)
+        if value:
+            config_renegociarDividas.set_value(tag=nome_tarefa, value=value)
+            mensagem += f"Nome da tarefa atualizado para '{value}'\n\n"
+        else:
+            mensagem += f"Nome da tarefa não foi atualizado\n\n"
+        
+        caminho_tarefa = 'caminho_tarefa_renegociarDividas'
+        value = request.POST.get(caminho_tarefa)
+        if (value) and os.path.exists(value):
+            config_renegociarDividas.set_value(tag=caminho_tarefa, value=value)
+            mensagem += f"Caminho da tarefa atualizado para '{value}'\n\n"
+        else:
+            mensagem += f"Caminho da tarefa não foi atualizado\n\n"
+
+        mensagem += f"Finalizado!\n\n"
+        
+        return Utils.message_retorno(request, text=mensagem, name_route='index_renegociarDividas')
+    
+    return redirect('index_renegociarDividas')
+
+
+
+@login_required
+@permission_required('tasks.renegociarDividas', raise_exception=True)
+def index_renegociarDividas(request: WSGIRequest):
+    content = {
+        "teste": "testado",
+        "nome_tarefa": config_renegociarDividas.nome_tarefa_renegociarDividas,
+        "caminho_tarefa": config_renegociarDividas.caminho_tarefa_renegociarDividas,
+    }
+    return render(request, 'renegociarDividas/index.html', content)
+
+
+@login_required
+@permission_required('tasks.financeiro_renegociarDividas', raise_exception=True)
+def upFiles_renegociarDividas(request:WSGIRequest):
+    if request.method == "POST":
+        lista_files = ['relatorio_kitei']
+        mensagem = "Retorno do envio:\n\n"
+        
+        
+        path_file = os.path.join(config_renegociarDividas.caminho_tarefa_renegociarDividas, 'file')#type: ignore
+        for file in os.listdir(path_file):
+            file = os.path.join(path_file, file)
+            os.unlink(file)
+            
+        for file_key in lista_files:
+            file = request.FILES.get(file_key)
+            if file:
+                if file.name.lower().endswith(('.xlsx', '.xls', 'xlsm')):
+                    path_file_final = Utils.upfile(path=path_file, file=file)#type: ignore
+                    if path_file_final:
+                        ##### start task #####
+                        for tarefa in tarefas.listar_tarefas():
+                            if tarefa.nome == config_renegociarDividas.nome_tarefa_renegociarDividas:
+                                tarefa.executar()
+                    mensagem += f"Arquivo '{file.name}' enviado com sucesso\n\n"
+                else:
+                    mensagem += f"Arquivo '{file.name}' não é um arquivo Excel\n\n"
+                    continue
+        
+        
+        #return Utils.message_retorno(request, text=mensagem, name_route='index_renegociarDividas')
+                       
+        
+        return Utils.message_retorno(request, text=mensagem, name_route='index_renegociarDividas')
+            
+    return redirect('index_renegociarDividas')
+
+
+@login_required
+@permission_required('tasks.renegociarDividas', raise_exception=True)
+def status_renegociarDividas(request: WSGIRequest):
+    if request.method == "GET":
+        if (mod:=request.GET.get("mod")):
+            if mod == "status_automação":
+                for tarefa in tarefas.listar_tarefas():
+                    if tarefa.nome == config_renegociarDividas.nome_tarefa_renegociarDividas:
+                        tarefa_status = tarefa.status()
+                        return JsonResponse({'status': tarefa_status})
+       
+    return JsonResponse({'status': 'ok', 'message': 'Test endpoint is working!'})
+
+###################################################
