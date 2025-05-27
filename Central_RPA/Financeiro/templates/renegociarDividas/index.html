@@ -6,8 +6,8 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href={% static 'css/cadrastroVtax.css' %}>
 <link rel="stylesheet" type="text/css" href={% static 'css/relatAberturaDesp.css' %}>
+<link rel="stylesheet" type="text/css" href={% static 'css/cadrastroVtax.css' %}>
 
 <div class="conteudo">
     {% if request.user.is_superuser %}
@@ -48,12 +48,26 @@
            
         </form>
     </div>
-    
-    <div class="retorno">
-        Retorno
-    </div>
 
-    <div class="logs">
+    <div class="download" id="download" style="display: None;">
+        <h3>Lista de Download</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Tamanho</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody id="downloads">
+
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <div class="logs" id="logs">
         Log 
     </div>
 
@@ -67,20 +81,73 @@ async function status_tarefa() {
     const response = await fetch("{% url 'status_renegociarDividas' %}?mod=status_automação");
     const data = await response.json();
 
-    console.log(data.status)
     if (data.status === 'Em execução') {
         document.getElementById('bt_iniciar').style.display = 'none';
+        document.getElementById('download').style.display = 'none';
         document.getElementById('bt_executando').style.display = 'block';
     } else if (data.status === 'Pronto'){
         document.getElementById('bt_iniciar').style.display = 'block';
+        document.getElementById('download').style.display = 'block';
         document.getElementById('bt_executando').style.display = 'none';
     }
 
 
 }
 
+async function log() {
+    const response = await fetch("{% url 'status_renegociarDividas' %}?mod=logs");
+    const data = await response.json();
+
+    document.getElementById("logs").innerHTML = "";
+
+    for (const log of data){
+            color = "";
+            if (log.includes("<django:green>")){
+                color = "style='color:green;'";
+            } else if(log.includes("<django:yellow>")){
+                color = "style='color:#d1d100;'";
+            } else if(log.includes("<django:red>")){
+                color = "style='color:red;'";
+            } else if(log.includes("<django:blue>")){
+                color = "style='color:blue;'";
+            } else {
+                color = "style='color:white;'";
+            }
+
+            document.getElementById("logs").innerHTML += `
+                <p ${color}>${log}</p>`;
+    }
+}
+
+async function downloads(){
+    const response = await fetch("{% url 'status_renegociarDividas' %}?mod=download");
+    const data = await response.json();
+
+    document.getElementById("downloads").innerHTML = "";
+
+    for (const file of data){
+        document.getElementById("downloads").innerHTML += `
+        <tr>
+            <td>${file.name}</td>
+            <td>${file.data}</td>
+            <td>${file.tamanho}</td>
+            <td><a href="{% url 'download' %}?path=${file.caminho}">Download</a></td>
+        </tr>
+        
+        `;
+    }
+}
+
 
 status_tarefa()
+setInterval(status_tarefa, 1000); // Atualiza o status a cada 1 segundos
+
+log()
+setInterval(log, 1000); // Atualiza o status a cada 1 segundos
+
+downloads()
+setInterval(downloads, 1000); // Atualiza o status a cada 1 segundos
+
 
 </script>
 

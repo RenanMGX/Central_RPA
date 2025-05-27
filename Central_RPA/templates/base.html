@@ -62,6 +62,10 @@
 
                 {% if 'tasks.cadastrarVtax' in request.user.get_all_permissions or request.user.is_superuser %}<li {% if request.path == '/Financeiro/index_cadastrarVtax' %}class="active"{% endif %} >
                     <a href="{% url "index_cadastrarVtax" %}">Cadastro Vtax</a></li>{% endif %} 
+
+                {% if 'tasks.renegociarDividas' in request.user.get_all_permissions or request.user.is_superuser %}<li {% if request.path == '/Financeiro/index_renegociarDividas' %}class="active"{% endif %} >
+                    <a href="{% url "index_renegociarDividas" %}">Renegociação de Dividas</a></li>{% endif %} 
+                    
                         
             </ul>
             <ul class="nav navbar-nav navbar-right">

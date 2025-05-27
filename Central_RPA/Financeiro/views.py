@@ -409,7 +409,7 @@ def index_renegociarDividas(request: WSGIRequest):
 
 
 @login_required
-@permission_required('tasks.financeiro_renegociarDividas', raise_exception=True)
+@permission_required('tasks.renegociarDividas', raise_exception=True)
 def upFiles_renegociarDividas(request:WSGIRequest):
     if request.method == "POST":
         lista_files = ['relatorio_kitei']
@@ -417,12 +417,20 @@ def upFiles_renegociarDividas(request:WSGIRequest):
         
         
         path_file = os.path.join(config_renegociarDividas.caminho_tarefa_renegociarDividas, 'file')#type: ignore
-        for file in os.listdir(path_file):
-            file = os.path.join(path_file, file)
-            os.unlink(file)
+        
+        if request.FILES:
+            for file in os.listdir(path_file):
+                file = os.path.join(path_file, file)
+                try:
+                    os.unlink(file)
+                except Exception as e:
+                    return Utils.message_retorno(request, text=f"Não foi possivel apagar o arquivo {file}\nError:\n{str(e)}", name_route='index_renegociarDividas')
+        else:
+            return Utils.message_retorno(request, text="Nenhum arquivo enviado!", name_route='index_renegociarDividas')
             
         for file_key in lista_files:
             file = request.FILES.get(file_key)
+            print(file)
             if file:
                 if file.name.lower().endswith(('.xlsx', '.xls', 'xlsm')):
                     path_file_final = Utils.upfile(path=path_file, file=file)#type: ignore
@@ -455,6 +463,35 @@ def status_renegociarDividas(request: WSGIRequest):
                     if tarefa.nome == config_renegociarDividas.nome_tarefa_renegociarDividas:
                         tarefa_status = tarefa.status()
                         return JsonResponse({'status': tarefa_status})
+            
+            elif mod == "logs":
+                if config_renegociarDividas.caminho_tarefa_renegociarDividas:
+                    path = os.path.join(config_renegociarDividas.caminho_tarefa_renegociarDividas, 'json', 'informativo.json')
+                    if os.path.exists(path):
+                        with open(path, 'r' , encoding='utf-8') as _file:
+                            logs = json.load(_file)
+                            logs.reverse()
+                            return JsonResponse(logs, safe=False)
+                        
+            elif mod == "download":
+                if config_renegociarDividas.caminho_tarefa_renegociarDividas:
+                    path = os.path.join(config_renegociarDividas.caminho_tarefa_renegociarDividas, 'file')
+                    if os.path.exists(path):
+                        list_files = []
+                        for file in os.listdir(path):
+                            file = os.path.join(path, file)
+                            mod_datetime = datetime.fromtimestamp(os.path.getmtime(file))
+                            
+                            list_files.append({
+                                "name": os.path.basename(file),
+                                "caminho": file,
+                                "tamanho": f"{round(os.path.getsize(file) / 1024, 2)} KB",
+                                "data": mod_datetime.strftime("%Y-%m-%d %H:%M:%S")
+                            })
+                            
+                            
+                            
+                        return JsonResponse(list_files, safe=False)
        
     return JsonResponse({'status': 'ok', 'message': 'Test endpoint is working!'})
 
