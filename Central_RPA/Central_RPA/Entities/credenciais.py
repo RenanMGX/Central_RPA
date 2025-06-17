@@ -6,13 +6,15 @@ from random import randint
 from getpass import getuser
 from typing import Literal, Dict
 import asyncio
+from patrimar_dependencies.sharepointfolder import SharePointFolders
 
 class CredentialFileNotFoundError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 class Credential:
-    path_raiz:str=f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA S A\\RPA - Documentos\\RPA - Dados\\CRD\\.patrimar_rpa\\credenciais\\"
+    #path_raiz:str=f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA S A\\RPA - Documentos\\RPA - Dados\\CRD\\.patrimar_rpa\\credenciais\\"
+    path_raiz:str = SharePointFolders(r'RPA - Dados\CRD\.patrimar_rpa\credenciais')
     
     @property
     def path(self):
